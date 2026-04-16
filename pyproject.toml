@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Streamlit platform for exploring data science concepts"
 readme = "README.md"
 requires-python = ">=3.9"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "Data Science Learner", email = "learner@example.com"},
 ]
@@ -47,16 +47,16 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/data-science-platform"
-Repository = "https://github.com/yourusername/data-science-platform"
-Issues = "https://github.com/yourusername/data-science-platform/issues"
+Homepage = "https://github.com/danielpsrj/DataScienceStudies"
+Repository = "https://github.com/danielpsrj/DataScienceStudies"
+Issues = "https://github.com/danielpsrj/DataScienceStudies/issues"
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["app", "app.components", "app.logic", "app.pages", "app.data", "app.api", "app.api.routes"]
+packages = ["app", "app.components", "app.logic", "app.pages", "app.data", "app.api"]
 
 [tool.ruff]
 target-version = "py39"
