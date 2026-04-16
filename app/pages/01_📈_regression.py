@@ -8,7 +8,6 @@ import plotly.graph_objects as go
 from app.components import (
     theory_section,
     math_equation,
-    interactive_demo,
     code_tabs,
     display_applications,
     display_pitfalls,
@@ -35,7 +34,7 @@ def main() -> None:
     state.add_to_history("linear_regression")
     state.current_model = "linear_regression"
     
-    # 1. Theory section
+    # 1. Concept Overview
     theory_section(
         title="Concept Overview",
         content="""
@@ -60,7 +59,7 @@ def main() -> None:
         columns=(2, 1),
     )
     
-    # 2. Mathematical formulation
+    # Mathematical formulation (not in expander since content is short)
     math_equation(
         equation=r"y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_n x_n + \epsilon",
         variables={
@@ -72,26 +71,28 @@ def main() -> None:
         },
         title="Mathematical Formulation",
         icon="🧮",
-        expandable=True,
+        expandable=False,
     )
     
-    # Matrix formulation
-    with st.expander("📐 Matrix Formulation", expanded=False):
-        st.latex(r"\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}")
-        st.markdown("**Where:**")
-        st.markdown(r"- $\mathbf{y}$: Vector of target values $(n \times 1)$")
-        st.markdown(r"- $\mathbf{X}$: Design matrix $(n \times p)$")
-        st.markdown(r"- $\boldsymbol{\beta}$: Coefficient vector $(p \times 1)$")
-        st.markdown(r"- $\boldsymbol{\epsilon}$: Error vector $(n \times 1)$")
-        
-        st.markdown("**Ordinary Least Squares (OLS) Solution:**")
-        st.latex(r"\hat{\boldsymbol{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}")
+    # Matrix formulation (not in expander since content is short)
+    st.markdown("**Matrix Formulation:**")
+    st.latex(r"\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}")
+    st.markdown("**Where:**")
+    st.markdown(r"- $\mathbf{y}$: Vector of target values $(n \times 1)$")
+    st.markdown(r"- $\mathbf{X}$: Design matrix $(n \times p)$")
+    st.markdown(r"- $\boldsymbol{\beta}$: Coefficient vector $(p \times 1)$")
+    st.markdown(r"- $\boldsymbol{\epsilon}$: Error vector $(n \times 1)$")
     
-    # 3. Interactive demo
+    st.markdown("**Ordinary Least Squares (OLS) Solution:**")
+    st.latex(r"\hat{\boldsymbol{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}")
+    
+    # 2. Interactive Demo
     st.header("🎮 Interactive Demo")
     
-    # Parameter controls in sidebar
-    with st.sidebar:
+    # Create columns for demo layout
+    demo_col1, demo_col2 = st.columns([1, 2])
+    
+    with demo_col1:
         st.subheader("⚙️ Regression Parameters")
         
         sample_size = st.slider(
@@ -127,55 +128,56 @@ def main() -> None:
             help="Display residual plot below regression line"
         )
     
-    # Run demo button
-    if st.button("🚀 Run Linear Regression", type="primary"):
-        with st.spinner("Generating data and training model..."):
-            # Generate data
-            X, y = generate_linear_data(
-                n_samples=sample_size,
-                n_features=1,
-                noise=noise_level,
-                random_state=42
-            )
-            
-            # Train model
-            results = train_linear_regression(
-                X, y,
-                test_size=test_size,
-                random_state=42
-            )
-            
-            # Display results
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.metric("R² Score", f"{results['r2']:.4f}")
-                st.metric("Mean Squared Error", f"{results['mse']:.4f}")
-            
-            with col2:
-                st.metric("Slope (β₁)", f"{results['coefficients']['slope']:.4f}")
-                st.metric("Intercept (β₀)", f"{results['intercept']:.4f}")
-            
-            # Plot results
-            fig = plot_regression_results(
-                results['X_test'],
-                results['y_test'],
-                results['y_pred'],
-                show_residuals=show_residuals
-            )
-            st.plotly_chart(fig, use_container_width=True)
-            
-            # Show raw data
-            with st.expander("📊 Generated Data", expanded=False):
-                import pandas as pd
-                df = pd.DataFrame({
-                    'Feature': X.flatten(),
-                    'Target': y
-                })
-                st.dataframe(df.head(10))
-                st.caption(f"Showing 10 of {len(df)} rows")
+    with demo_col2:
+        # Run demo button
+        if st.button("🚀 Run Linear Regression", type="primary", use_container_width=True):
+            with st.spinner("Generating data and training model..."):
+                # Generate data
+                X, y = generate_linear_data(
+                    n_samples=sample_size,
+                    n_features=1,
+                    noise=noise_level,
+                    random_state=42
+                )
+                
+                # Train model
+                results = train_linear_regression(
+                    X, y,
+                    test_size=test_size,
+                    random_state=42
+                )
+                
+                # Display results
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    st.metric("R² Score", f"{results['r2']:.4f}")
+                    st.metric("Mean Squared Error", f"{results['mse']:.4f}")
+                
+                with col2:
+                    st.metric("Slope (β₁)", f"{results['coefficients']['slope']:.4f}")
+                    st.metric("Intercept (β₀)", f"{results['intercept']:.4f}")
+                
+                # Plot results
+                fig = plot_regression_results(
+                    results['X_test'],
+                    results['y_test'],
+                    results['y_pred'],
+                    show_residuals=show_residuals
+                )
+                st.plotly_chart(fig, use_container_width=True)
+                
+                # Show raw data
+                with st.expander("📊 Generated Data", expanded=False):
+                    import pandas as pd
+                    df = pd.DataFrame({
+                        'Feature': X.flatten(),
+                        'Target': y
+                    })
+                    st.dataframe(df.head(10))
+                    st.caption(f"Showing 10 of {len(df)} rows")
     
-    # 4. Implementation examples
+    # 3. Implementation Examples
     st.header("💻 Implementation Examples")
     
     code_tabs({
@@ -256,113 +258,110 @@ print(f"Lasso coefficients (sparse): {lasso.coef_}")
 """
     })
     
-    # 5. Applications
-    display_applications([
-        {
-            "title": "House Price Prediction",
-            "description": "Predict housing prices based on features like size, location, number of bedrooms, etc.",
-        },
-        {
-            "title": "Sales Forecasting",
-            "description": "Forecast future sales based on historical data, marketing spend, and economic indicators.",
-        },
-        {
-            "title": "Risk Assessment",
-            "description": "Assess financial or insurance risk based on customer demographics and behavior.",
-        },
-        {
-            "title": "Medical Research",
-            "description": "Model relationships between clinical measurements and health outcomes.",
-        },
-        {
-            "title": "Energy Consumption",
-            "description": "Predict energy usage based on weather, time of day, and building characteristics.",
-        },
-        {
-            "title": "Academic Performance",
-            "description": "Predict student grades based on study hours, attendance, and previous performance.",
-        },
-    ])
+    # 4. Real-World Applications (in tabs)
+    st.header("💼 Real-World Applications")
     
-    # 6. Common pitfalls
-    display_pitfalls([
-        {
-            "title": "Multicollinearity",
-            "description": "High correlation between independent variables can make coefficient estimates unstable.",
-            "solution": "Use variance inflation factor (VIF) to detect, consider regularization or feature selection."
+    applications_data = {
+        "House Price Prediction": {
+            "description": "Predict housing prices based on features like size, location, number of bedrooms, etc.",
+            "details": "Used by real estate platforms, mortgage lenders, and property investors to estimate market values and make informed decisions.",
+            "examples": [
+                "Zillow's Zestimate algorithm",
+                "Redfin's home value estimates",
+                "Bank mortgage approval systems"
+            ]
         },
-        {
-            "title": "Overfitting",
-            "description": "Model fits training data too closely and performs poorly on new data.",
+        "Sales Forecasting": {
+            "description": "Forecast future sales based on historical data, marketing spend, and economic indicators.",
+            "details": "Helps businesses optimize inventory, plan marketing campaigns, and allocate resources effectively.",
+            "examples": [
+                "Retail chain sales predictions",
+                "E-commerce demand forecasting",
+                "Subscription service revenue projections"
+            ]
+        },
+        "Risk Assessment": {
+            "description": "Assess financial or insurance risk based on customer demographics and behavior.",
+            "details": "Used by banks, insurance companies, and financial institutions to quantify risk exposure.",
+            "examples": [
+                "Credit scoring for loan applications",
+                "Insurance premium calculation",
+                "Investment risk analysis"
+            ]
+        },
+        "Medical Research": {
+            "description": "Model relationships between clinical measurements and health outcomes.",
+            "details": "Helps researchers identify risk factors, predict disease progression, and evaluate treatment effectiveness.",
+            "examples": [
+                "Predicting patient recovery time",
+                "Modeling drug dosage effects",
+                "Identifying disease risk factors"
+            ]
+        }
+    }
+    
+    app_tabs = st.tabs(list(applications_data.keys()))
+    
+    for tab, (app_name, app_info) in zip(app_tabs, applications_data.items()):
+        with tab:
+            st.subheader(app_name)
+            st.markdown(f"**Description:** {app_info['description']}")
+            st.markdown(f"**Details:** {app_info['details']}")
+            st.markdown("**Examples:**")
+            for example in app_info['examples']:
+                st.markdown(f"- {example}")
+    
+    # 5. Common Pitfalls & Fixes (in tabs)
+    st.header("⚠️ Common Pitfalls & Fixes")
+    
+    pitfalls_data = {
+        "Multicollinearity": {
+            "problem": "High correlation between independent variables can make coefficient estimates unstable and difficult to interpret.",
+            "detection": "Calculate Variance Inflation Factor (VIF) - values above 5-10 indicate multicollinearity.",
+            "solution": "Remove correlated features, use regularization (Ridge/Lasso), or apply Principal Component Analysis (PCA)."
+        },
+        "Overfitting": {
+            "problem": "Model fits training data too closely and performs poorly on new, unseen data.",
+            "detection": "Large gap between training and test performance metrics.",
             "solution": "Use train-test split, cross-validation, regularization, or reduce model complexity."
         },
-        {
-            "title": "Non-linearity",
-            "description": "Assuming linear relationship when true relationship is non-linear.",
-            "solution": "Check residual plots, consider polynomial features, or use non-linear models."
+        "Non-linearity": {
+            "problem": "Assuming linear relationship when true relationship is non-linear.",
+            "detection": "Check residual plots for patterns, use polynomial feature testing.",
+            "solution": "Add polynomial features, use non-linear models, or apply transformations."
         },
-        {
-            "title": "Heteroscedasticity",
-            "description": "Non-constant variance of errors across predictions.",
-            "solution": "Transform variables, use weighted least squares, or robust regression methods."
+        "Heteroscedasticity": {
+            "problem": "Non-constant variance of errors across predictions.",
+            "detection": "Fan-shaped pattern in residual plots, Breusch-Pagan test.",
+            "solution": "Transform variables (log, sqrt), use weighted least squares, or robust regression."
         },
-        {
-            "title": "Outliers",
-            "description": "Extreme values can disproportionately influence the regression line.",
-            "solution": "Detect with Cook's distance, use robust regression, or remove influential points."
-        },
-        {
-            "title": "Autocorrelation",
-            "description": "Correlation between consecutive errors in time series data.",
-            "solution": "Use Durbin-Watson test, consider time series models or include lagged variables."
-        },
-    ])
+        "Outliers": {
+            "problem": "Extreme values can disproportionately influence the regression line.",
+            "detection": "Cook's distance, leverage plots, studentized residuals.",
+            "solution": "Remove influential points, use robust regression methods, or apply transformations."
+        }
+    }
     
-    # 7. Advanced topics
-    with st.expander("🚀 Advanced Topics", expanded=False):
-        st.markdown("""
-        ### Regularization Techniques
-        
-        **Ridge Regression (L2)**
-        - Adds penalty proportional to squared magnitude of coefficients
-        - Helps with multicollinearity
-        - All coefficients shrink but none become exactly zero
-        
-        **Lasso Regression (L1)**
-        - Adds penalty proportional to absolute magnitude of coefficients
-        - Performs feature selection (some coefficients become zero)
-        - Useful for high-dimensional data
-        
-        **Elastic Net**
-        - Combines L1 and L2 penalties
-        - Balances feature selection and coefficient shrinkage
-        
-        ### Assumption Checking
-        
-        Always validate these assumptions:
-        1. **Linearity**: Relationship between X and y is linear
-        2. **Independence**: Observations are independent
-        3. **Homoscedasticity**: Constant variance of errors
-        4. **Normality**: Errors are normally distributed
-        5. **No multicollinearity**: Features are not highly correlated
-        
-        ### Model Evaluation Metrics
-        
-        - **R²**: Proportion of variance explained (0 to 1, higher is better)
-        - **Adjusted R²**: R² adjusted for number of predictors
-        - **MSE**: Mean squared error (lower is better)
-        - **RMSE**: Root mean squared error (in original units)
-        - **MAE**: Mean absolute error (robust to outliers)
-        """)
+    pitfall_tabs = st.tabs(list(pitfalls_data.keys()))
     
-    # 8. References
-    display_references(get_regression_references())
+    for tab, (pitfall_name, pitfall_info) in zip(pitfall_tabs, pitfalls_data.items()):
+        with tab:
+            st.subheader(pitfall_name)
+            st.markdown(f"**Problem:** {pitfall_info['problem']}")
+            st.markdown(f"**How to Detect:** {pitfall_info['detection']}")
+            st.markdown(f"**Solution:** {pitfall_info['solution']}")
+    
+    # 6. References & Further Reading (in expander)
+    st.header("📚 References & Further Reading")
+    
+    with st.expander("Click to view references", expanded=False):
+        display_references(get_regression_references())
     
     # Footer
     st.markdown("---")
     st.caption(
         "Linear Regression Concept • "
-        "Use the sidebar to adjust parameters and run the demo • "
+        "Use the demo section to experiment with different parameters • "
         "Next: Try the Clustering page for unsupervised learning"
     )
 
