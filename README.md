@@ -98,23 +98,32 @@ data-science-platform/
    uv sync
    ```
 
-3. **Set up environment variables**
+4. **Activate the virtual environment**
+   ```bash
+   # On macOS/Linux:
+   source .venv/bin/activate
+   
+   # On Windows:
+   # .venv\Scripts\activate
+   ```
+
+5. **Set up environment variables**
    ```bash
    cp .env.example .env
    # Edit .env if needed
    ```
 
-4. **Generate sample data**
+6. **Generate sample data**
    ```bash
    python scripts/generate_fake_data.py
    ```
 
-5. **Run the application**
+7. **Run the application**
    ```bash
    streamlit run app/main.py
    ```
 
-6. **Run the API server (optional)**
+8. **Run the API server (optional)**
    ```bash
    uvicorn app.api.main:app --reload
    ```
