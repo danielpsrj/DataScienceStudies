@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  # Streamlit application
+  streamlit:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.streamlit
+    container_name: data-science-platform-streamlit
+    ports:
+      - "8501:8501"
+    environment:
+      - DATABASE_URL=sqlite:///./data.db
+      - APP_ENV=production
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./data.db:/app/data.db
+      - ./app:/app/app:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('localhost', 8501), timeout=2)"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - data-science-network
+
+  # FastAPI backend
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    container_name: data-science-platform-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./data.db
+      - APP_ENV=production
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - API_WORKERS=4
+    volumes:
+      - ./data.db:/app/data.db
+      - ./app:/app/app:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('localhost', 8000), timeout=2)"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - data-science-network
+    depends_on:
+      - streamlit
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: data-science-platform-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - data-science-network
+
+  # Database initialization (runs once)
+  db-init:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    container_name: data-science-platform-db-init
+    command: >
+      sh -c "
+        python -c 'from app.data.models import Base; from app.config import settings; from sqlalchemy import create_engine; engine = create_engine(settings.database_url); Base.metadata.create_all(bind=engine); print(\"Database tables created\")' &&
+        python scripts/generate_fake_data.py
+      "
+    environment:
+      - DATABASE_URL=sqlite:///./data.db
+      - APP_ENV=production
+    volumes:
+      - ./data.db:/app/data.db
+      - ./app:/app/app:ro
+      - ./scripts:/app/scripts:ro
+    networks:
+      - data-science-network
+    restart: "no"
+
+volumes:
+  redis-data:
+
+networks:
+  data-science-network:
+    driver: bridge

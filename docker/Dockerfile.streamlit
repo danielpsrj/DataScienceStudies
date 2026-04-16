@@ -1,0 +1,46 @@
+# Streamlit Dockerfile for Data Science Platform
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install UV
+RUN pip install --no-cache-dir uv
+
+# Copy project files
+COPY pyproject.toml uv.lock ./
+COPY app ./app
+
+# Install dependencies with UV
+RUN uv sync --frozen --no-dev
+
+# Create non-root user
+RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
+USER appuser
+
+# Expose Streamlit port
+EXPOSE 8501
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD python -c "import socket; socket.create_connection(('localhost', 8501), timeout=2)" || exit 1
+
+# Run Streamlit
+CMD ["uv", "run", "streamlit", "run", "app/main.py", \
+    "--server.port=8501", \
+    "--server.address=0.0.0.0", \
+    "--server.headless=true", \
+    "--browser.serverAddress=0.0.0.0", \
+    "--browser.gatherUsageStats=false"]
