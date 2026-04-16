@@ -55,44 +55,45 @@ def main() -> None:
         columns=(2, 1),
     )
 
-    # Mathematical formulation (not in expander since content is short)
-    math_equation(
-        equation=r"y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_n x_n + \epsilon",
-        variables={
-            "y": "Dependent variable (target)",
-            "\\beta_0": "Intercept (bias term)",
-            "\\beta_i": "Coefficients (feature weights)",
-            "x_i": "Independent variables (features)",
-            "\\epsilon": "Error term (residuals)",
-        },
-        title="Mathematical Formulation",
-        icon="🧮",
-        expandable=False,
-    )
+    # Mathematical formulation in expander
+    with st.expander("🧮 Mathematical Formulation", expanded=False):
+        math_equation(
+            equation=r"y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_n x_n + \epsilon",
+            variables={
+                "y": "Dependent variable (target)",
+                "\\beta_0": "Intercept (bias term)",
+                "\\beta_i": "Coefficients (feature weights)",
+                "x_i": "Independent variables (features)",
+                "\\epsilon": "Error term (residuals)",
+            },
+            title="Linear Regression Equation",
+            icon="📐",
+            expandable=False,
+        )
 
-    # Matrix formulation (not in expander since content is short)
-    st.markdown("**Matrix Formulation:**")
-    st.latex(r"\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}")
-    st.markdown("**Where:**")
-    st.markdown(r"- $\mathbf{y}$: Vector of target values $(n \times 1)$")
-    st.markdown(r"- $\mathbf{X}$: Design matrix $(n \times p)$")
-    st.markdown(r"- $\boldsymbol{\beta}$: Coefficient vector $(p \times 1)$")
-    st.markdown(r"- $\boldsymbol{\epsilon}$: Error vector $(n \times 1)$")
+        st.markdown("**Matrix Formulation:**")
+        st.latex(r"\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\epsilon}")
+        st.markdown("**Where:**")
+        st.markdown(r"- $\mathbf{y}$: Vector of target values $(n \times 1)$")
+        st.markdown(r"- $\mathbf{X}$: Design matrix $(n \times p)$")
+        st.markdown(r"- $\boldsymbol{\beta}$: Coefficient vector $(p \times 1)$")
+        st.markdown(r"- $\boldsymbol{\epsilon}$: Error vector $(n \times 1)$")
 
-    st.markdown("**Ordinary Least Squares (OLS) Solution:**")
-    st.latex(
-        r"\hat{\boldsymbol{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}"
-    )
+        st.markdown("**Ordinary Least Squares (OLS) Solution:**")
+        st.latex(
+            r"\hat{\boldsymbol{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}"
+        )
 
     # 2. Interactive Demo
     st.header("🎮 Interactive Demo")
 
-    # Create columns for demo layout
-    demo_col1, demo_col2 = st.columns([1, 2])
+    # Demo controls at the top (horizontal layout)
+    st.subheader("⚙️ Regression Parameters")
 
-    with demo_col1:
-        st.subheader("⚙️ Regression Parameters")
+    # Create horizontal columns for controls
+    control_col1, control_col2, control_col3, control_col4 = st.columns(4)
 
+    with control_col1:
         sample_size = st.slider(
             "Sample Size",
             min_value=10,
@@ -102,6 +103,7 @@ def main() -> None:
             help="Number of data points to generate",
         )
 
+    with control_col2:
         noise_level = st.slider(
             "Noise Level",
             min_value=0.0,
@@ -111,6 +113,7 @@ def main() -> None:
             help="Standard deviation of Gaussian noise",
         )
 
+    with control_col3:
         test_size = st.slider(
             "Test Size",
             min_value=0.1,
@@ -120,14 +123,16 @@ def main() -> None:
             help="Proportion of data for testing",
         )
 
+    with control_col4:
         show_residuals = st.checkbox(
             "Show Residuals",
             value=True,
             help="Display residual plot below regression line",
         )
 
-    with demo_col2:
-        # Run demo button
+    # Run button centered below controls
+    run_col1, run_col2, run_col3 = st.columns([1, 2, 1])
+    with run_col2:
         if st.button(
             "🚀 Run Linear Regression", type="primary", use_container_width=True
         ):
@@ -256,98 +261,98 @@ print(f"Lasso coefficients (sparse): {lasso.coef_}")
         }
     )
 
-    # 4. Real-World Applications (in tabs)
-    st.header("💼 Real-World Applications")
+    # 4. Real-World Applications (in expander with tabs inside)
+    with st.expander("💼 Real-World Applications", expanded=False):
+        applications_data = {
+            "House Price Prediction": {
+                "description": "Predict housing prices based on features like size, location, number of bedrooms, etc.",
+                "details": "Used by real estate platforms, mortgage lenders, and property investors to estimate market values and make informed decisions.",
+                "examples": [
+                    "Zillow's Zestimate algorithm",
+                    "Redfin's home value estimates",
+                    "Bank mortgage approval systems",
+                ],
+            },
+            "Sales Forecasting": {
+                "description": "Forecast future sales based on historical data, marketing spend, and economic indicators.",
+                "details": "Helps businesses optimize inventory, plan marketing campaigns, and allocate resources effectively.",
+                "examples": [
+                    "Retail chain sales predictions",
+                    "E-commerce demand forecasting",
+                    "Subscription service revenue projections",
+                ],
+            },
+            "Risk Assessment": {
+                "description": "Assess financial or insurance risk based on customer demographics and behavior.",
+                "details": "Used by banks, insurance companies, and financial institutions to quantify risk exposure.",
+                "examples": [
+                    "Credit scoring for loan applications",
+                    "Insurance premium calculation",
+                    "Investment risk analysis",
+                ],
+            },
+            "Medical Research": {
+                "description": "Model relationships between clinical measurements and health outcomes.",
+                "details": "Helps researchers identify risk factors, predict disease progression, and evaluate treatment effectiveness.",
+                "examples": [
+                    "Predicting patient recovery time",
+                    "Modeling drug dosage effects",
+                    "Identifying disease risk factors",
+                ],
+            },
+        }
 
-    applications_data = {
-        "House Price Prediction": {
-            "description": "Predict housing prices based on features like size, location, number of bedrooms, etc.",
-            "details": "Used by real estate platforms, mortgage lenders, and property investors to estimate market values and make informed decisions.",
-            "examples": [
-                "Zillow's Zestimate algorithm",
-                "Redfin's home value estimates",
-                "Bank mortgage approval systems",
-            ],
-        },
-        "Sales Forecasting": {
-            "description": "Forecast future sales based on historical data, marketing spend, and economic indicators.",
-            "details": "Helps businesses optimize inventory, plan marketing campaigns, and allocate resources effectively.",
-            "examples": [
-                "Retail chain sales predictions",
-                "E-commerce demand forecasting",
-                "Subscription service revenue projections",
-            ],
-        },
-        "Risk Assessment": {
-            "description": "Assess financial or insurance risk based on customer demographics and behavior.",
-            "details": "Used by banks, insurance companies, and financial institutions to quantify risk exposure.",
-            "examples": [
-                "Credit scoring for loan applications",
-                "Insurance premium calculation",
-                "Investment risk analysis",
-            ],
-        },
-        "Medical Research": {
-            "description": "Model relationships between clinical measurements and health outcomes.",
-            "details": "Helps researchers identify risk factors, predict disease progression, and evaluate treatment effectiveness.",
-            "examples": [
-                "Predicting patient recovery time",
-                "Modeling drug dosage effects",
-                "Identifying disease risk factors",
-            ],
-        },
-    }
+        app_tabs = st.tabs(list(applications_data.keys()))
 
-    app_tabs = st.tabs(list(applications_data.keys()))
+        for tab, (app_name, app_info) in zip(app_tabs, applications_data.items()):
+            with tab:
+                st.subheader(app_name)
+                st.markdown(f"**Description:** {app_info['description']}")
+                st.markdown(f"**Details:** {app_info['details']}")
+                st.markdown("**Examples:**")
+                for example in app_info["examples"]:
+                    st.markdown(f"- {example}")
 
-    for tab, (app_name, app_info) in zip(app_tabs, applications_data.items()):
-        with tab:
-            st.subheader(app_name)
-            st.markdown(f"**Description:** {app_info['description']}")
-            st.markdown(f"**Details:** {app_info['details']}")
-            st.markdown("**Examples:**")
-            for example in app_info["examples"]:
-                st.markdown(f"- {example}")
+    # 5. Common Pitfalls & Fixes (in expander with tabs inside)
+    with st.expander("⚠️ Common Pitfalls & Fixes", expanded=False):
+        pitfalls_data = {
+            "Multicollinearity": {
+                "problem": "High correlation between independent variables can make coefficient estimates unstable and difficult to interpret.",
+                "detection": "Calculate Variance Inflation Factor (VIF) - values above 5-10 indicate multicollinearity.",
+                "solution": "Remove correlated features, use regularization (Ridge/Lasso), or apply Principal Component Analysis (PCA).",
+            },
+            "Overfitting": {
+                "problem": "Model fits training data too closely and performs poorly on new, unseen data.",
+                "detection": "Large gap between training and test performance metrics.",
+                "solution": "Use train-test split, cross-validation, regularization, or reduce model complexity.",
+            },
+            "Non-linearity": {
+                "problem": "Assuming linear relationship when true relationship is non-linear.",
+                "detection": "Check residual plots for patterns, use polynomial feature testing.",
+                "solution": "Add polynomial features, use non-linear models, or apply transformations.",
+            },
+            "Heteroscedasticity": {
+                "problem": "Non-constant variance of errors across predictions.",
+                "detection": "Fan-shaped pattern in residual plots, Breusch-Pagan test.",
+                "solution": "Transform variables (log, sqrt), use weighted least squares, or robust regression.",
+            },
+            "Outliers": {
+                "problem": "Extreme values can disproportionately influence the regression line.",
+                "detection": "Cook's distance, leverage plots, studentized residuals.",
+                "solution": "Remove influential points, use robust regression methods, or apply transformations.",
+            },
+        }
 
-    # 5. Common Pitfalls & Fixes (in tabs)
-    st.header("⚠️ Common Pitfalls & Fixes")
+        pitfall_tabs = st.tabs(list(pitfalls_data.keys()))
 
-    pitfalls_data = {
-        "Multicollinearity": {
-            "problem": "High correlation between independent variables can make coefficient estimates unstable and difficult to interpret.",
-            "detection": "Calculate Variance Inflation Factor (VIF) - values above 5-10 indicate multicollinearity.",
-            "solution": "Remove correlated features, use regularization (Ridge/Lasso), or apply Principal Component Analysis (PCA).",
-        },
-        "Overfitting": {
-            "problem": "Model fits training data too closely and performs poorly on new, unseen data.",
-            "detection": "Large gap between training and test performance metrics.",
-            "solution": "Use train-test split, cross-validation, regularization, or reduce model complexity.",
-        },
-        "Non-linearity": {
-            "problem": "Assuming linear relationship when true relationship is non-linear.",
-            "detection": "Check residual plots for patterns, use polynomial feature testing.",
-            "solution": "Add polynomial features, use non-linear models, or apply transformations.",
-        },
-        "Heteroscedasticity": {
-            "problem": "Non-constant variance of errors across predictions.",
-            "detection": "Fan-shaped pattern in residual plots, Breusch-Pagan test.",
-            "solution": "Transform variables (log, sqrt), use weighted least squares, or robust regression.",
-        },
-        "Outliers": {
-            "problem": "Extreme values can disproportionately influence the regression line.",
-            "detection": "Cook's distance, leverage plots, studentized residuals.",
-            "solution": "Remove influential points, use robust regression methods, or apply transformations.",
-        },
-    }
-
-    pitfall_tabs = st.tabs(list(pitfalls_data.keys()))
-
-    for tab, (pitfall_name, pitfall_info) in zip(pitfall_tabs, pitfalls_data.items()):
-        with tab:
-            st.subheader(pitfall_name)
-            st.markdown(f"**Problem:** {pitfall_info['problem']}")
-            st.markdown(f"**How to Detect:** {pitfall_info['detection']}")
-            st.markdown(f"**Solution:** {pitfall_info['solution']}")
+        for tab, (pitfall_name, pitfall_info) in zip(
+            pitfall_tabs, pitfalls_data.items()
+        ):
+            with tab:
+                st.subheader(pitfall_name)
+                st.markdown(f"**Problem:** {pitfall_info['problem']}")
+                st.markdown(f"**How to Detect:** {pitfall_info['detection']}")
+                st.markdown(f"**Solution:** {pitfall_info['solution']}")
 
     # 6. References & Further Reading (in expander)
     st.header("📚 References & Further Reading")

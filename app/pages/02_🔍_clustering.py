@@ -5,7 +5,6 @@ Clustering concept page.
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
-import pandas as pd
 
 from app.components import (
     theory_section,
@@ -102,12 +101,13 @@ def main() -> None:
     # 2. Interactive Demo
     st.header("🎮 Interactive Demo")
 
-    # Create columns for demo layout
-    demo_col1, demo_col2 = st.columns([1, 2])
+    # Demo controls at the top (horizontal layout)
+    st.subheader("⚙️ Clustering Parameters")
 
-    with demo_col1:
-        st.subheader("⚙️ Dataset Parameters")
+    # Create horizontal columns for controls
+    param_col1, param_col2, param_col3, param_col4 = st.columns(4)
 
+    with param_col1:
         dataset_type = st.selectbox(
             "Dataset Type",
             ["blobs", "moons", "circles", "anisotropic", "random"],
@@ -124,6 +124,22 @@ def main() -> None:
             help="Number of data points to generate",
         )
 
+    with param_col2:
+        algorithm = st.selectbox(
+            "Clustering Algorithm",
+            ["K-means", "DBSCAN", "Hierarchical", "GMM"],
+            index=0,
+            help="Algorithm to apply to the data",
+        )
+
+        scale_data = st.checkbox(
+            "Scale Features",
+            value=True,
+            help="Standardize features before clustering",
+        )
+
+    with param_col3:
+        # Dataset-specific parameters
         if dataset_type == "blobs":
             n_clusters = st.slider(
                 "True Clusters",
@@ -150,21 +166,7 @@ def main() -> None:
                 help="Amount of noise in the dataset",
             )
 
-        st.subheader("🔧 Algorithm Selection")
-
-        algorithm = st.selectbox(
-            "Clustering Algorithm",
-            ["K-means", "DBSCAN", "Hierarchical", "GMM"],
-            index=0,
-            help="Algorithm to apply to the data",
-        )
-
-        scale_data = st.checkbox(
-            "Scale Features",
-            value=True,
-            help="Standardize features before clustering (recommended for distance-based algorithms)",
-        )
-
+    with param_col4:
         # Algorithm-specific parameters
         if algorithm == "K-means":
             k_value = st.slider(
@@ -181,7 +183,6 @@ def main() -> None:
                 value=42,
                 help="Random seed for reproducibility",
             )
-
         elif algorithm == "DBSCAN":
             eps = st.slider(
                 "Epsilon (ε)",
@@ -189,22 +190,21 @@ def main() -> None:
                 max_value=2.0,
                 value=0.5,
                 step=0.1,
-                help="Maximum distance between points in the same neighborhood",
+                help="Maximum distance between points",
             )
             min_samples = st.slider(
                 "Min Samples",
                 min_value=2,
                 max_value=20,
                 value=5,
-                help="Minimum number of points to form a dense region",
+                help="Minimum points to form dense region",
             )
-
         elif algorithm == "Hierarchical":
             linkage_method = st.selectbox(
                 "Linkage Method",
                 ["ward", "complete", "average", "single"],
                 index=0,
-                help="Linkage criterion for hierarchical clustering",
+                help="Linkage criterion",
             )
             n_clusters_h = st.slider(
                 "Number of Clusters",
@@ -213,7 +213,6 @@ def main() -> None:
                 value=4,
                 help="Number of clusters to find",
             )
-
         elif algorithm == "GMM":
             n_components = st.slider(
                 "Number of Components",
@@ -226,11 +225,12 @@ def main() -> None:
                 "Covariance Type",
                 ["full", "tied", "diag", "spherical"],
                 index=0,
-                help="Type of covariance parameters to use",
+                help="Type of covariance parameters",
             )
 
-    with demo_col2:
-        # Run demo button
+    # Run button centered below controls
+    run_col1, run_col2, run_col3 = st.columns([1, 2, 1])
+    with run_col2:
         if st.button(
             "🚀 Run Clustering Analysis", type="primary", use_container_width=True
         ):
@@ -571,98 +571,98 @@ print(f"Converged: {gmm.converged_}")
         }
     )
 
-    # 4. Real-World Applications (in tabs)
-    st.header("💼 Real-World Applications")
+    # 4. Real-World Applications (in expander with tabs inside)
+    with st.expander("💼 Real-World Applications", expanded=False):
+        applications_data = {
+            "Customer Segmentation": {
+                "description": "Group customers based on purchasing behavior, demographics, and preferences.",
+                "details": "Enables targeted marketing, personalized recommendations, and improved customer retention strategies.",
+                "examples": [
+                    "E-commerce customer segmentation for personalized offers",
+                    "Banking customer profiling for tailored financial products",
+                    "Subscription service user groups for content recommendations",
+                ],
+            },
+            "Image Segmentation": {
+                "description": "Group pixels in images based on color, texture, or other features.",
+                "details": "Used in computer vision for object detection, medical imaging analysis, and autonomous vehicle systems.",
+                "examples": [
+                    "Medical image analysis for tumor detection",
+                    "Satellite image classification for land use mapping",
+                    "Facial recognition systems for security applications",
+                ],
+            },
+            "Anomaly Detection": {
+                "description": "Identify unusual patterns or outliers in data that deviate from normal behavior.",
+                "details": "Critical for fraud detection, network security monitoring, and quality control in manufacturing.",
+                "examples": [
+                    "Credit card fraud detection systems",
+                    "Network intrusion detection for cybersecurity",
+                    "Manufacturing defect detection in production lines",
+                ],
+            },
+            "Document Clustering": {
+                "description": "Group similar documents for organization, retrieval, and topic modeling.",
+                "details": "Used in information retrieval systems, recommendation engines, and content management platforms.",
+                "examples": [
+                    "News article categorization for media platforms",
+                    "Research paper organization for academic databases",
+                    "Customer support ticket grouping for efficient resolution",
+                ],
+            },
+        }
 
-    applications_data = {
-        "Customer Segmentation": {
-            "description": "Group customers based on purchasing behavior, demographics, and preferences.",
-            "details": "Enables targeted marketing, personalized recommendations, and improved customer retention strategies.",
-            "examples": [
-                "E-commerce customer segmentation for personalized offers",
-                "Banking customer profiling for tailored financial products",
-                "Subscription service user groups for content recommendations",
-            ],
-        },
-        "Image Segmentation": {
-            "description": "Group pixels in images based on color, texture, or other features.",
-            "details": "Used in computer vision for object detection, medical imaging analysis, and autonomous vehicle systems.",
-            "examples": [
-                "Medical image analysis for tumor detection",
-                "Satellite image classification for land use mapping",
-                "Facial recognition systems for security applications",
-            ],
-        },
-        "Anomaly Detection": {
-            "description": "Identify unusual patterns or outliers in data that deviate from normal behavior.",
-            "details": "Critical for fraud detection, network security monitoring, and quality control in manufacturing.",
-            "examples": [
-                "Credit card fraud detection systems",
-                "Network intrusion detection for cybersecurity",
-                "Manufacturing defect detection in production lines",
-            ],
-        },
-        "Document Clustering": {
-            "description": "Group similar documents for organization, retrieval, and topic modeling.",
-            "details": "Used in information retrieval systems, recommendation engines, and content management platforms.",
-            "examples": [
-                "News article categorization for media platforms",
-                "Research paper organization for academic databases",
-                "Customer support ticket grouping for efficient resolution",
-            ],
-        },
-    }
+        app_tabs = st.tabs(list(applications_data.keys()))
 
-    app_tabs = st.tabs(list(applications_data.keys()))
+        for tab, (app_name, app_info) in zip(app_tabs, applications_data.items()):
+            with tab:
+                st.subheader(app_name)
+                st.markdown(f"**Description:** {app_info['description']}")
+                st.markdown(f"**Details:** {app_info['details']}")
+                st.markdown("**Examples:**")
+                for example in app_info["examples"]:
+                    st.markdown(f"- {example}")
 
-    for tab, (app_name, app_info) in zip(app_tabs, applications_data.items()):
-        with tab:
-            st.subheader(app_name)
-            st.markdown(f"**Description:** {app_info['description']}")
-            st.markdown(f"**Details:** {app_info['details']}")
-            st.markdown("**Examples:**")
-            for example in app_info["examples"]:
-                st.markdown(f"- {example}")
+    # 5. Common Pitfalls & Fixes (in expander with tabs inside)
+    with st.expander("⚠️ Common Pitfalls & Fixes", expanded=False):
+        pitfalls_data = {
+            "Choosing Wrong Algorithm": {
+                "problem": "Selecting an inappropriate clustering algorithm for the data type or problem.",
+                "detection": "Poor clustering results, unnatural cluster shapes, or inability to find meaningful patterns.",
+                "solution": "Understand algorithm assumptions: K-means for spherical clusters, DBSCAN for density-based, hierarchical for hierarchical structures.",
+            },
+            "Incorrect Distance Metric": {
+                "problem": "Using inappropriate distance measures that don't capture data similarity correctly.",
+                "detection": "Clusters don't reflect natural groupings, similar points end up in different clusters.",
+                "solution": "Choose metric based on data type: Euclidean for continuous, Manhattan for grid-like, cosine for text, Jaccard for binary.",
+            },
+            "Scale Sensitivity": {
+                "problem": "Algorithms like K-means are sensitive to feature scales, giving undue importance to features with larger ranges.",
+                "detection": "Features with larger ranges dominate clustering, distorting results.",
+                "solution": "Always scale features (standardization or normalization) before applying distance-based algorithms.",
+            },
+            "Determining Optimal K": {
+                "problem": "Difficulty in choosing the right number of clusters, especially for algorithms like K-means.",
+                "detection": "Unclear elbow point in elbow method, ambiguous silhouette scores.",
+                "solution": "Use multiple methods: elbow method, silhouette analysis, gap statistic, and domain knowledge.",
+            },
+            "Handling Noise & Outliers": {
+                "problem": "Noise points can distort cluster boundaries and centroids, especially in density-based methods.",
+                "detection": "Many points classified as noise, unstable cluster boundaries.",
+                "solution": "Use robust algorithms like DBSCAN, pre-process data to remove outliers, or use noise-handling variants.",
+            },
+        }
 
-    # 5. Common Pitfalls & Fixes (in tabs)
-    st.header("⚠️ Common Pitfalls & Fixes")
+        pitfall_tabs = st.tabs(list(pitfalls_data.keys()))
 
-    pitfalls_data = {
-        "Choosing Wrong Algorithm": {
-            "problem": "Selecting an inappropriate clustering algorithm for the data type or problem.",
-            "detection": "Poor clustering results, unnatural cluster shapes, or inability to find meaningful patterns.",
-            "solution": "Understand algorithm assumptions: K-means for spherical clusters, DBSCAN for density-based, hierarchical for hierarchical structures.",
-        },
-        "Incorrect Distance Metric": {
-            "problem": "Using inappropriate distance measures that don't capture data similarity correctly.",
-            "detection": "Clusters don't reflect natural groupings, similar points end up in different clusters.",
-            "solution": "Choose metric based on data type: Euclidean for continuous, Manhattan for grid-like, cosine for text, Jaccard for binary.",
-        },
-        "Scale Sensitivity": {
-            "problem": "Algorithms like K-means are sensitive to feature scales, giving undue importance to features with larger ranges.",
-            "detection": "Features with larger ranges dominate clustering, distorting results.",
-            "solution": "Always scale features (standardization or normalization) before applying distance-based algorithms.",
-        },
-        "Determining Optimal K": {
-            "problem": "Difficulty in choosing the right number of clusters, especially for algorithms like K-means.",
-            "detection": "Unclear elbow point in elbow method, ambiguous silhouette scores.",
-            "solution": "Use multiple methods: elbow method, silhouette analysis, gap statistic, and domain knowledge.",
-        },
-        "Handling Noise & Outliers": {
-            "problem": "Noise points can distort cluster boundaries and centroids, especially in density-based methods.",
-            "detection": "Many points classified as noise, unstable cluster boundaries.",
-            "solution": "Use robust algorithms like DBSCAN, pre-process data to remove outliers, or use noise-handling variants.",
-        },
-    }
-
-    pitfall_tabs = st.tabs(list(pitfalls_data.keys()))
-
-    for tab, (pitfall_name, pitfall_info) in zip(pitfall_tabs, pitfalls_data.items()):
-        with tab:
-            st.subheader(pitfall_name)
-            st.markdown(f"**Problem:** {pitfall_info['problem']}")
-            st.markdown(f"**How to Detect:** {pitfall_info['detection']}")
-            st.markdown(f"**Solution:** {pitfall_info['solution']}")
+        for tab, (pitfall_name, pitfall_info) in zip(
+            pitfall_tabs, pitfalls_data.items()
+        ):
+            with tab:
+                st.subheader(pitfall_name)
+                st.markdown(f"**Problem:** {pitfall_info['problem']}")
+                st.markdown(f"**How to Detect:** {pitfall_info['detection']}")
+                st.markdown(f"**Solution:** {pitfall_info['solution']}")
 
     # 6. References & Further Reading (in expander)
     st.header("📚 References & Further Reading")

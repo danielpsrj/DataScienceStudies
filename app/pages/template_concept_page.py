@@ -19,16 +19,11 @@ IMPORTANT FOR AI AGENTS:
 """
 
 import streamlit as st
-import numpy as np
-import plotly.graph_objects as go
 
 from app.components import (
     theory_section,
     math_equation,
     code_tabs,
-    display_applications,
-    display_pitfalls,
-    display_references,
     # Import specific references for your concept
     # from app.components.references import get_[concept]_references
 )
@@ -69,34 +64,37 @@ def main() -> None:
         columns=(2, 1),  # Adjust columns as needed
     )
 
-    # Mathematical formulation (not in expander since content is short)
-    math_equation(
-        equation=r"[LaTeX equation]",
-        variables={
-            "[variable1]": "Description",
-            "[variable2]": "Description",
-            "[variable3]": "Description",
-        },
-        title="Mathematical Formulation",
-        icon="🧮",
-        expandable=False,
-    )
+    # Mathematical formulation in expander (for longer content)
+    with st.expander("🧮 Mathematical Formulation", expanded=False):
+        math_equation(
+            equation=r"[LaTeX equation]",
+            variables={
+                "[variable1]": "Description",
+                "[variable2]": "Description",
+                "[variable3]": "Description",
+            },
+            title="Mathematical Formulation",
+            icon="📐",
+            expandable=False,
+        )
 
-    # Additional mathematical details if needed
-    # st.markdown("**Additional Formulation:**")
-    # st.latex(r"[additional LaTeX]")
-    # st.markdown("**Where:**")
-    # st.markdown(r"- $\mathbf{[symbol]}$: Description")
+        # Additional mathematical details if needed
+        # st.markdown("**Additional Formulation:**")
+        # st.latex(r"[additional LaTeX]")
+        # st.markdown("**Where:**")
+        # st.markdown(r"- $\mathbf{[symbol]}$: Description")
 
     # ==================== 2. INTERACTIVE DEMO ====================
     st.header("🎮 Interactive Demo")
 
-    # Create columns for demo layout - DEMO CONTROLS GO HERE, NOT IN SIDEBAR
-    demo_col1, demo_col2 = st.columns([1, 2])
+    # Demo controls at the top (horizontal layout)
+    st.subheader("⚙️ [Concept] Parameters")
 
-    with demo_col1:
-        st.subheader("⚙️ [Concept] Parameters")
+    # Create horizontal columns for controls
+    # Adjust number of columns based on your parameters
+    control_col1, control_col2, control_col3, control_col4 = st.columns(4)
 
+    with control_col1:
         # Add parameter controls here
         # Example:
         # param1 = st.slider(
@@ -107,29 +105,49 @@ def main() -> None:
         #     step=1,
         #     help="Description of parameter 1"
         # )
+        pass
 
+    with control_col2:
+        # Example:
         # param2 = st.selectbox(
         #     "Algorithm Type",
         #     ["Option 1", "Option 2", "Option 3"],
         #     index=0,
         #     help="Description of algorithm selection"
         # )
+        pass
 
+    with control_col3:
+        # Example:
+        # param3 = st.slider(
+        #     "Parameter 3",
+        #     min_value=0.0,
+        #     max_value=1.0,
+        #     value=0.5,
+        #     step=0.1,
+        #     help="Description of parameter 3"
+        # )
+        pass
+
+    with control_col4:
+        # Example:
         # show_details = st.checkbox(
         #     "Show Detailed Results",
         #     value=False,
         #     help="Display additional analysis"
         # )
+        pass
 
-    with demo_col2:
-        # Run demo button
+    # Run button centered below controls
+    run_col1, run_col2, run_col3 = st.columns([1, 2, 1])
+    with run_col2:
         if st.button(
             "🚀 Run [Concept] Analysis", type="primary", use_container_width=True
         ):
             with st.spinner("Running analysis..."):
                 # Generate data and run analysis
                 # Example:
-                # data = generate_data(param1, param2)
+                # data = generate_data(param1, param2, param3)
                 # results = analyze_data(data)
 
                 # Display results
@@ -236,100 +254,100 @@ print(f"Best score: {grid_search.best_score_:.4f}")
         }
     )
 
-    # ==================== 4. REAL-WORLD APPLICATIONS ====================
-    st.header("💼 Real-World Applications")
+    # ==================== 4. REAL-WORLD APPLICATIONS (in expander with tabs inside) ====================
+    with st.expander("💼 Real-World Applications", expanded=False):
+        applications_data = {
+            "Application 1": {
+                "description": "Brief description of application 1.",
+                "details": "Detailed explanation of how this concept is applied in real-world scenarios.",
+                "examples": [
+                    "Example 1: Specific use case",
+                    "Example 2: Industry application",
+                    "Example 3: Research application",
+                ],
+            },
+            "Application 2": {
+                "description": "Brief description of application 2.",
+                "details": "Detailed explanation including challenges and solutions.",
+                "examples": [
+                    "Example 1: Business use case",
+                    "Example 2: Scientific application",
+                    "Example 3: Engineering problem",
+                ],
+            },
+            "Application 3": {
+                "description": "Brief description of application 3.",
+                "details": "Explanation of unique aspects of this application.",
+                "examples": [
+                    "Example 1: Commercial product",
+                    "Example 2: Academic research",
+                    "Example 3: Government project",
+                ],
+            },
+            "Application 4": {
+                "description": "Brief description of application 4.",
+                "details": "Future trends and emerging applications.",
+                "examples": [
+                    "Example 1: Cutting-edge research",
+                    "Example 2: Innovative startup",
+                    "Example 3: Industry 4.0 application",
+                ],
+            },
+        }
 
-    applications_data = {
-        "Application 1": {
-            "description": "Brief description of application 1.",
-            "details": "Detailed explanation of how this concept is applied in real-world scenarios.",
-            "examples": [
-                "Example 1: Specific use case",
-                "Example 2: Industry application",
-                "Example 3: Research application",
-            ],
-        },
-        "Application 2": {
-            "description": "Brief description of application 2.",
-            "details": "Detailed explanation including challenges and solutions.",
-            "examples": [
-                "Example 1: Business use case",
-                "Example 2: Scientific application",
-                "Example 3: Engineering problem",
-            ],
-        },
-        "Application 3": {
-            "description": "Brief description of application 3.",
-            "details": "Explanation of unique aspects of this application.",
-            "examples": [
-                "Example 1: Commercial product",
-                "Example 2: Academic research",
-                "Example 3: Government project",
-            ],
-        },
-        "Application 4": {
-            "description": "Brief description of application 4.",
-            "details": "Future trends and emerging applications.",
-            "examples": [
-                "Example 1: Cutting-edge research",
-                "Example 2: Innovative startup",
-                "Example 3: Industry 4.0 application",
-            ],
-        },
-    }
+        # Applications in tabs - FOLLOW THIS PATTERN
+        app_tabs = st.tabs(list(applications_data.keys()))
 
-    # Applications in tabs - FOLLOW THIS PATTERN
-    app_tabs = st.tabs(list(applications_data.keys()))
+        for tab, (app_name, app_info) in zip(app_tabs, applications_data.items()):
+            with tab:
+                st.subheader(app_name)
+                st.markdown(f"**Description:** {app_info['description']}")
+                st.markdown(f"**Details:** {app_info['details']}")
+                st.markdown("**Examples:**")
+                for example in app_info["examples"]:
+                    st.markdown(f"- {example}")
 
-    for tab, (app_name, app_info) in zip(app_tabs, applications_data.items()):
-        with tab:
-            st.subheader(app_name)
-            st.markdown(f"**Description:** {app_info['description']}")
-            st.markdown(f"**Details:** {app_info['details']}")
-            st.markdown("**Examples:**")
-            for example in app_info["examples"]:
-                st.markdown(f"- {example}")
+    # ==================== 5. COMMON PITFALLS & FIXES (in expander with tabs inside) ====================
+    with st.expander("⚠️ Common Pitfalls & Fixes", expanded=False):
+        pitfalls_data = {
+            "Pitfall 1": {
+                "problem": "Description of the common problem or mistake.",
+                "detection": "How to identify if you're experiencing this pitfall.",
+                "solution": "Step-by-step solution to fix or avoid this pitfall.",
+            },
+            "Pitfall 2": {
+                "problem": "Description of another common issue.",
+                "detection": "Diagnostic methods or indicators.",
+                "solution": "Best practices and solutions.",
+            },
+            "Pitfall 3": {
+                "problem": "Description of technical challenge.",
+                "detection": "Performance metrics or error patterns.",
+                "solution": "Optimization techniques or alternative approaches.",
+            },
+            "Pitfall 4": {
+                "problem": "Description of implementation error.",
+                "detection": "Debugging steps or validation methods.",
+                "solution": "Correct implementation with examples.",
+            },
+            "Pitfall 5": {
+                "problem": "Description of conceptual misunderstanding.",
+                "detection": "Educational resources or diagnostic tests.",
+                "solution": "Clarification with analogies or examples.",
+            },
+        }
 
-    # ==================== 5. COMMON PITFALLS & FIXES ====================
-    st.header("⚠️ Common Pitfalls & Fixes")
+        # Pitfalls in tabs - FOLLOW THIS PATTERN
+        pitfall_tabs = st.tabs(list(pitfalls_data.keys()))
 
-    pitfalls_data = {
-        "Pitfall 1": {
-            "problem": "Description of the common problem or mistake.",
-            "detection": "How to identify if you're experiencing this pitfall.",
-            "solution": "Step-by-step solution to fix or avoid this pitfall.",
-        },
-        "Pitfall 2": {
-            "problem": "Description of another common issue.",
-            "detection": "Diagnostic methods or indicators.",
-            "solution": "Best practices and solutions.",
-        },
-        "Pitfall 3": {
-            "problem": "Description of technical challenge.",
-            "detection": "Performance metrics or error patterns.",
-            "solution": "Optimization techniques or alternative approaches.",
-        },
-        "Pitfall 4": {
-            "problem": "Description of implementation error.",
-            "detection": "Debugging steps or validation methods.",
-            "solution": "Correct implementation with examples.",
-        },
-        "Pitfall 5": {
-            "problem": "Description of conceptual misunderstanding.",
-            "detection": "Educational resources or diagnostic tests.",
-            "solution": "Clarification with analogies or examples.",
-        },
-    }
-
-    # Pitfalls in tabs - FOLLOW THIS PATTERN
-    pitfall_tabs = st.tabs(list(pitfalls_data.keys()))
-
-    for tab, (pitfall_name, pitfall_info) in zip(pitfall_tabs, pitfalls_data.items()):
-        with tab:
-            st.subheader(pitfall_name)
-            st.markdown(f"**Problem:** {pitfall_info['problem']}")
-            st.markdown(f"**How to Detect:** {pitfall_info['detection']}")
-            st.markdown(f"**Solution:** {pitfall_info['solution']}")
+        for tab, (pitfall_name, pitfall_info) in zip(
+            pitfall_tabs, pitfalls_data.items()
+        ):
+            with tab:
+                st.subheader(pitfall_name)
+                st.markdown(f"**Problem:** {pitfall_info['problem']}")
+                st.markdown(f"**How to Detect:** {pitfall_info['detection']}")
+                st.markdown(f"**Solution:** {pitfall_info['solution']}")
 
     # ==================== 6. REFERENCES & FURTHER READING ====================
     st.header("📚 References & Further Reading")
