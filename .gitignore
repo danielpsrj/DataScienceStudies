@@ -84,4 +84,4 @@ logs/
 docker-compose.override.yml
 
 # UV
-uv.lock
+# uv.lock - Commented out for Docker deployment
