@@ -1,6 +1,7 @@
 """
 Interactive demo component for concept pages.
 """
+
 from typing import Any, Callable, Dict, List, Optional, Union
 import streamlit as st
 
@@ -18,7 +19,7 @@ def interactive_demo(
 ) -> None:
     """
     Standard interactive demo with parameter controls.
-    
+
     Args:
         title: Demo title
         param_definitions: List of dicts with parameter definitions
@@ -29,21 +30,21 @@ def interactive_demo(
         code_snippet: Optional code snippet to display
     """
     st.header(f"{icon} {title}")
-    
+
     # Get user preferences
     state = get_state()
     auto_run = state.get_preference("auto_run", False)
-    
+
     # Parameter controls in sidebar
     with st.sidebar:
         st.subheader("⚙️ Parameters")
         params = {}
-        
+
         for param in param_definitions:
             param_type = param.get("type", "slider")
             param_name = param.get("name")
             param_args = param.get("args", {})
-            
+
             if param_type == "slider":
                 params[param_name] = st.slider(**param_args)
             elif param_type == "selectbox":
@@ -58,33 +59,33 @@ def interactive_demo(
                 params[param_name] = st.radio(**param_args)
             else:
                 st.warning(f"Unknown parameter type: {param_type}")
-    
+
     # Run button and results
     run_button = st.button("🚀 Run Demo", type="primary", disabled=auto_run)
-    
+
     if auto_run or run_button:
         with st.spinner("Running demo..."):
             try:
                 results = run_callback(**params)
-                
+
                 # Display results
                 if results_callback:
                     results_callback(results, params)
                 else:
                     _default_results_display(results, params)
-                
+
                 st.success("Demo completed successfully!")
-                
+
             except Exception as e:
                 st.error(f"Error running demo: {str(e)}")
                 if st.button("Show Traceback"):
                     st.exception(e)
-    
+
     # Code snippet
     if show_code and code_snippet:
         with st.expander("💻 Demo Code", expanded=False):
             st.code(code_snippet, language="python")
-    
+
     # Parameter summary
     with st.expander("📋 Parameter Summary", expanded=False):
         st.markdown("**Current Parameters:**")
@@ -97,19 +98,25 @@ def _default_results_display(results: Any, params: Dict[str, Any]) -> None:
     if isinstance(results, dict):
         # Display dictionary as metrics or JSON
         cols = st.columns(min(4, len(results)))
-        
+
         for idx, (key, value) in enumerate(results.items()):
             col = cols[idx % len(cols)]
             with col:
-                st.metric(label=key, value=f"{value:.4f}" if isinstance(value, (int, float)) else str(value))
-        
+                st.metric(
+                    label=key,
+                    value=f"{value:.4f}"
+                    if isinstance(value, (int, float))
+                    else str(value),
+                )
+
         # Show raw results in expander
         with st.expander("📊 Raw Results"):
             st.json(results)
-    
+
     elif hasattr(results, "shape"):  # NumPy array or pandas DataFrame
         try:
             import pandas as pd
+
             if isinstance(results, pd.DataFrame):
                 st.dataframe(results)
             else:
@@ -118,7 +125,7 @@ def _default_results_display(results: Any, params: Dict[str, Any]) -> None:
                 st.dataframe(df)
         except ImportError:
             st.write(results)
-    
+
     else:
         # Try to display as string or object
         st.write(results)
@@ -134,7 +141,7 @@ def comparison_demo(
 ) -> None:
     """
     Demo that compares multiple algorithms.
-    
+
     Args:
         title: Demo title
         algorithms: List of algorithm definitions
@@ -144,84 +151,85 @@ def comparison_demo(
         icon: Icon to display before title
     """
     st.header(f"{icon} {title}")
-    
+
     # Algorithm selection
     algorithm_names = [alg["name"] for alg in algorithms]
     selected_alg = st.selectbox("Select Algorithm", algorithm_names)
-    
+
     # Get selected algorithm
     selected_algorithm = next(alg for alg in algorithms if alg["name"] == selected_alg)
-    
+
     # Algorithm-specific parameters
     with st.sidebar:
         st.subheader(f"⚙️ {selected_alg} Parameters")
-        
+
         alg_params = {}
         for param in selected_algorithm.get("parameters", []):
             param_type = param.get("type", "slider")
             param_name = param.get("name")
             param_args = param.get("args", {})
-            
+
             if param_type == "slider":
                 alg_params[param_name] = st.slider(**param_args)
             elif param_type == "selectbox":
                 alg_params[param_name] = st.selectbox(**param_args)
             elif param_type == "checkbox":
                 alg_params[param_name] = st.checkbox(**param_args)
-    
+
     # Shared parameters
     shared_params = {}
     if param_definitions:
         with st.sidebar:
             st.subheader("⚙️ Shared Parameters")
-            
+
             for param in param_definitions:
                 param_type = param.get("type", "slider")
                 param_name = param.get("name")
                 param_args = param.get("args", {})
-                
+
                 if param_type == "slider":
                     shared_params[param_name] = st.slider(**param_args)
                 elif param_type == "selectbox":
                     shared_params[param_name] = st.selectbox(**param_args)
                 elif param_type == "checkbox":
                     shared_params[param_name] = st.checkbox(**param_args)
-    
+
     # Run comparison
     if st.button("🚀 Run Comparison", type="primary"):
         with st.spinner("Running comparison..."):
             # Generate data
             data = data_generator(**shared_params)
-            
+
             # Run all algorithms
             results = {}
             for algorithm in algorithms:
                 alg_name = algorithm["name"]
                 alg_function = algorithm["function"]
                 alg_params = algorithm.get("default_params", {})
-                
+
                 try:
                     result = alg_function(data, **alg_params)
                     results[alg_name] = result
                 except Exception as e:
                     st.warning(f"Error running {alg_name}: {str(e)}")
                     results[alg_name] = None
-            
+
             # Evaluate and display results
             evaluation = evaluator(results, data)
-            
+
             # Display comparison
             st.subheader("📈 Comparison Results")
-            
+
             if isinstance(evaluation, dict):
                 # Convert to DataFrame for better display
                 try:
                     import pandas as pd
+
                     df = pd.DataFrame.from_dict(evaluation, orient="index")
                     st.dataframe(df.style.highlight_max(axis=0))
                 except ImportError:
                     st.json(evaluation)
-            
+
             # Show individual results
             with st.expander("🔍 Individual Algorithm Results"):
                 for alg_name, result in results.items():

@@ -1,6 +1,7 @@
 """
 Theory section component for concept pages.
 """
+
 from typing import Optional, Tuple
 import streamlit as st
 
@@ -14,7 +15,7 @@ def theory_section(
 ) -> None:
     """
     Display a standardized theory section with optional image.
-    
+
     Args:
         title: Section title (without emoji, will be prefixed with 📚)
         content: Markdown content explaining the concept
@@ -25,7 +26,7 @@ def theory_section(
     if expanded:
         # Display directly without expander
         st.header(f"📚 {title}")
-        
+
         if image_url:
             col1, col2 = st.columns(columns)
             with col1:
@@ -62,14 +63,14 @@ def key_points_section(
 ) -> None:
     """
     Display key points in a visually distinct section.
-    
+
     Args:
         points: List of key point strings
         title: Section title
         icon: Icon to display before title
     """
     st.subheader(f"{icon} {title}")
-    
+
     for i, point in enumerate(points, 1):
         with st.container(border=True):
             st.markdown(f"**{i}. {point}**")
@@ -82,14 +83,14 @@ def assumptions_section(
 ) -> None:
     """
     Display assumptions with descriptions.
-    
+
     Args:
         assumptions: List of (assumption, description) tuples
         title: Section title
         icon: Icon to display before title
     """
     st.subheader(f"{icon} {title}")
-    
+
     for assumption, description in assumptions:
         with st.container(border=True):
             col1, col2 = st.columns([1, 3])

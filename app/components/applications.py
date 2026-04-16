@@ -15,7 +15,7 @@ def display_applications(
 ) -> None:
     """
     Display a grid of real-world applications with descriptions.
-    
+
     Args:
         applications: List of dictionaries with 'title' and 'description' keys
         title: Section title
@@ -25,32 +25,32 @@ def display_applications(
     if not applications:
         st.info("No applications available for this concept.")
         return
-    
+
     st.header(title)
     st.markdown("---")
-    
+
     # Create columns for the grid
     cols = st.columns(columns)
-    
+
     for i, app in enumerate(applications):
         col_idx = i % columns
         with cols[col_idx]:
             with st.expander(f"**{app['title']}**", expanded=expand_all):
-                st.markdown(app['description'])
-                
+                st.markdown(app["description"])
+
                 # Add optional details if present
-                if 'details' in app:
+                if "details" in app:
                     st.markdown("**Details:**")
-                    st.markdown(app['details'])
-                
+                    st.markdown(app["details"])
+
                 # Add optional examples if present
-                if 'examples' in app:
+                if "examples" in app:
                     st.markdown("**Examples:**")
-                    if isinstance(app['examples'], list):
-                        for example in app['examples']:
+                    if isinstance(app["examples"], list):
+                        for example in app["examples"]:
                             st.markdown(f"- {example}")
                     else:
-                        st.markdown(app['examples'])
+                        st.markdown(app["examples"])
 
 
 def get_regression_applications() -> List[Dict[str, str]]:
@@ -63,8 +63,8 @@ def get_regression_applications() -> List[Dict[str, str]]:
             "examples": [
                 "Predicting monthly sales for a retail chain",
                 "Forecasting demand for seasonal products",
-                "Estimating revenue growth for startups"
-            ]
+                "Estimating revenue growth for startups",
+            ],
         },
         {
             "title": "Risk Assessment",
@@ -73,8 +73,8 @@ def get_regression_applications() -> List[Dict[str, str]]:
             "examples": [
                 "Credit scoring for loan applications",
                 "Insurance premium calculation",
-                "Medical risk prediction"
-            ]
+                "Medical risk prediction",
+            ],
         },
         {
             "title": "Price Optimization",
@@ -83,8 +83,8 @@ def get_regression_applications() -> List[Dict[str, str]]:
             "examples": [
                 "Dynamic pricing for ride-sharing services",
                 "Hotel room pricing based on demand",
-                "E-commerce product pricing algorithms"
-            ]
+                "E-commerce product pricing algorithms",
+            ],
         },
         {
             "title": "Quality Control",
@@ -93,9 +93,9 @@ def get_regression_applications() -> List[Dict[str, str]]:
             "examples": [
                 "Predicting defect rates in manufacturing",
                 "Optimizing chemical process parameters",
-                "Monitoring equipment performance"
-            ]
-        }
+                "Monitoring equipment performance",
+            ],
+        },
     ]
 
 
@@ -109,8 +109,8 @@ def get_clustering_applications() -> List[Dict[str, str]]:
             "examples": [
                 "E-commerce customer segmentation",
                 "Banking customer profiling",
-                "Subscription service user groups"
-            ]
+                "Subscription service user groups",
+            ],
         },
         {
             "title": "Image Segmentation",
@@ -119,8 +119,8 @@ def get_clustering_applications() -> List[Dict[str, str]]:
             "examples": [
                 "Medical image analysis (tumor detection)",
                 "Satellite image classification",
-                "Facial recognition systems"
-            ]
+                "Facial recognition systems",
+            ],
         },
         {
             "title": "Anomaly Detection",
@@ -129,8 +129,8 @@ def get_clustering_applications() -> List[Dict[str, str]]:
             "examples": [
                 "Credit card fraud detection",
                 "Network intrusion detection",
-                "Manufacturing defect detection"
-            ]
+                "Manufacturing defect detection",
+            ],
         },
         {
             "title": "Document Clustering",
@@ -139,9 +139,9 @@ def get_clustering_applications() -> List[Dict[str, str]]:
             "examples": [
                 "News article categorization",
                 "Research paper organization",
-                "Customer support ticket grouping"
-            ]
-        }
+                "Customer support ticket grouping",
+            ],
+        },
     ]
 
 
@@ -155,8 +155,8 @@ def get_time_series_applications() -> List[Dict[str, str]]:
             "examples": [
                 "Daily stock price forecasting",
                 "Market volatility prediction",
-                "Trading signal generation"
-            ]
+                "Trading signal generation",
+            ],
         },
         {
             "title": "Energy Demand Forecasting",
@@ -165,8 +165,8 @@ def get_time_series_applications() -> List[Dict[str, str]]:
             "examples": [
                 "Hourly electricity demand prediction",
                 "Renewable energy output forecasting",
-                "Peak load management"
-            ]
+                "Peak load management",
+            ],
         },
         {
             "title": "Weather Forecasting",
@@ -175,8 +175,8 @@ def get_time_series_applications() -> List[Dict[str, str]]:
             "examples": [
                 "Temperature and precipitation forecasts",
                 "Hurricane tracking and intensity prediction",
-                "Seasonal climate patterns"
-            ]
+                "Seasonal climate patterns",
+            ],
         },
         {
             "title": "Website Traffic Analysis",
@@ -185,21 +185,21 @@ def get_time_series_applications() -> List[Dict[str, str]]:
             "examples": [
                 "Daily visitor prediction",
                 "Peak traffic hour analysis",
-                "Seasonal trend identification"
-            ]
-        }
+                "Seasonal trend identification",
+            ],
+        },
     ]
 
 
 # Example usage in a Streamlit app:
 if __name__ == "__main__":
     st.title("Applications Component Demo")
-    
+
     st.subheader("Regression Applications")
     display_applications(get_regression_applications())
-    
+
     st.subheader("Clustering Applications")
     display_applications(get_clustering_applications(), columns=3)
-    
+
     st.subheader("Time Series Applications (Expanded)")
     display_applications(get_time_series_applications(), expand_all=True)

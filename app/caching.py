@@ -2,6 +2,7 @@
 Caching utilities for the Data Science Platform.
 Provides enhanced caching beyond Streamlit's built-in cache.
 """
+
 import hashlib
 import json
 import pickle
@@ -16,11 +17,11 @@ from app.config import settings
 
 class CacheEntry:
     """A cache entry with metadata."""
-    
+
     def __init__(self, value: Any, ttl: Optional[int] = None):
         """
         Initialize a cache entry.
-        
+
         Args:
             value: The cached value
             ttl: Time to live in seconds (None for no expiration)
@@ -29,7 +30,7 @@ class CacheEntry:
         self.created_at = datetime.now()
         self.ttl = ttl
         self.access_count = 0
-    
+
     @property
     def is_expired(self) -> bool:
         """Check if the cache entry has expired."""
@@ -37,12 +38,12 @@ class CacheEntry:
             return False
         expiration_time = self.created_at + timedelta(seconds=self.ttl)
         return datetime.now() > expiration_time
-    
+
     def access(self) -> Any:
         """Access the cache entry and increment access count."""
         self.access_count += 1
         return self.value
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
@@ -56,94 +57,94 @@ class CacheEntry:
 class EnhancedCache:
     """
     Enhanced caching system with TTL support and statistics.
-    
+
     This cache can be used alongside Streamlit's built-in caching
     for more control over cache invalidation and statistics.
     """
-    
+
     def __init__(self, namespace: str = "default"):
         """
         Initialize the cache.
-        
+
         Args:
             namespace: Cache namespace to avoid key collisions
         """
         self.namespace = namespace
         self._ensure_initialized()
-    
+
     def _ensure_initialized(self) -> None:
         """Ensure cache is initialized in session state."""
         cache_key = f"enhanced_cache_{self.namespace}"
         if cache_key not in st.session_state:
             st.session_state[cache_key] = {}
-    
+
     def _get_cache(self) -> Dict[str, CacheEntry]:
         """Get the cache dictionary from session state."""
         cache_key = f"enhanced_cache_{self.namespace}"
         return st.session_state[cache_key]
-    
+
     def _set_cache(self, cache: Dict[str, CacheEntry]) -> None:
         """Set the cache dictionary in session state."""
         cache_key = f"enhanced_cache_{self.namespace}"
         st.session_state[cache_key] = cache
-    
+
     def generate_key(self, *args, **kwargs) -> str:
         """
         Generate a cache key from function arguments.
-        
+
         Args:
             *args: Positional arguments
             **kwargs: Keyword arguments
-            
+
         Returns:
             str: MD5 hash of the serialized arguments
         """
         # Sort kwargs for consistent key generation
         sorted_kwargs = sorted(kwargs.items())
-        
+
         # Create a string representation
         key_data = {
             "args": args,
             "kwargs": sorted_kwargs,
         }
-        
+
         # Use JSON for serialization (handles basic types)
         key_str = json.dumps(key_data, sort_keys=True, default=str)
-        
+
         # Generate MD5 hash
         return hashlib.md5(key_str.encode()).hexdigest()
-    
+
     def get(self, key: str, default: Any = None) -> Any:
         """
         Get a value from the cache.
-        
+
         Args:
             key: Cache key
             default: Default value if key not found or expired
-            
+
         Returns:
             The cached value or default
         """
         cache = self._get_cache()
-        
+
         if key not in cache:
             return default
-        
+
         entry = cache[key]
-        
+
         # Check if expired
         if entry.is_expired:
             del cache[key]
             self._set_cache(cache)
             return default
-        
+
         # Return value and update access count
         return entry.access()
-    
+
     def set(self, key: str, value: Any, ttl: Optional[int] = None) -> None:
         """
         Set a value in the cache.
-        
+
         Args:
             key: Cache key
             value: Value to cache
@@ -152,63 +153,63 @@ class EnhancedCache:
         cache = self._get_cache()
         cache[key] = CacheEntry(value, ttl)
         self._set_cache(cache)
-    
+
     def delete(self, key: str) -> bool:
         """
         Delete a value from the cache.
-        
+
         Args:
             key: Cache key
-            
+
         Returns:
             bool: True if key was deleted, False if not found
         """
         cache = self._get_cache()
-        
+
         if key in cache:
             del cache[key]
             self._set_cache(cache)
             return True
-        
+
         return False
-    
+
     def clear(self) -> None:
         """Clear all entries from the cache."""
         self._set_cache({})
-    
+
     def cleanup(self) -> int:
         """
         Remove expired entries from the cache.
-        
+
         Returns:
             int: Number of entries removed
         """
         cache = self._get_cache()
         initial_count = len(cache)
-        
+
         # Remove expired entries
         cache = {k: v for k, v in cache.items() if not v.is_expired}
-        
+
         self._set_cache(cache)
         return initial_count - len(cache)
-    
+
     def get_stats(self) -> Dict[str, Any]:
         """
         Get cache statistics.
-        
+
         Returns:
             Dictionary with cache statistics
         """
         cache = self._get_cache()
-        
+
         total_entries = len(cache)
         expired_entries = sum(1 for entry in cache.values() if entry.is_expired)
         total_accesses = sum(entry.access_count for entry in cache.values())
-        
+
         # Calculate average TTL
         ttls = [entry.ttl for entry in cache.values() if entry.ttl is not None]
         avg_ttl = sum(ttls) / len(ttls) if ttls else None
-        
+
         return {
             "namespace": self.namespace,
             "total_entries": total_entries,
@@ -218,7 +219,7 @@ class EnhancedCache:
             "average_ttl": avg_ttl,
             "size_bytes": len(pickle.dumps(cache)) if cache else 0,
         }
-    
+
     def cache_function(
         self,
         ttl: Optional[int] = None,
@@ -228,52 +229,53 @@ class EnhancedCache:
     ) -> Callable:
         """
         Decorator to cache function results.
-        
+
         Args:
             ttl: Time to live in seconds
             key_prefix: Prefix for cache keys
             ignore_args: List of argument indices to ignore in key generation
             ignore_kwargs: List of keyword argument names to ignore in key generation
-            
+
         Returns:
             Decorated function
         """
+
         def decorator(func: Callable) -> Callable:
             @wraps(func)
             def wrapper(*args, **kwargs):
                 # Prepare arguments for key generation
                 key_args = list(args)
                 key_kwargs = kwargs.copy()
-                
+
                 # Remove ignored arguments
                 if ignore_args:
                     for idx in sorted(ignore_args, reverse=True):
                         if idx < len(key_args):
                             key_args.pop(idx)
-                
+
                 if ignore_kwargs:
                     for kwarg in ignore_kwargs:
                         key_kwargs.pop(kwarg, None)
-                
+
                 # Generate cache key
                 cache_key = self.generate_key(*key_args, **key_kwargs)
                 full_key = f"{key_prefix}{func.__name__}_{cache_key}"
-                
+
                 # Try to get from cache
                 cached_result = self.get(full_key)
                 if cached_result is not None:
                     return cached_result
-                
+
                 # Execute function
                 result = func(*args, **kwargs)
-                
+
                 # Store in cache
                 self.set(full_key, result, ttl)
-                
+
                 return result
-            
+
             return wrapper
-        
+
         return decorator
 
 
@@ -281,6 +283,7 @@ class EnhancedCache:
 _data_cache = EnhancedCache(namespace="data")
 _model_cache = EnhancedCache(namespace="models")
 _plot_cache = EnhancedCache(namespace="plots")
+
 
 # Convenience functions
 def cache_data(key: str, value: Any, ttl: Optional[int] = None) -> None:

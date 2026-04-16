@@ -1,6 +1,7 @@
 """
 Clustering concept page.
 """
+
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
@@ -32,13 +33,15 @@ def main() -> None:
     """Main page function."""
     # Page header
     st.title("🔍 Clustering Analysis")
-    st.caption("Unsupervised learning for discovering patterns and grouping similar data points")
-    
+    st.caption(
+        "Unsupervised learning for discovering patterns and grouping similar data points"
+    )
+
     # Track page visit
     state = get_state()
     state.add_to_history("clustering")
     state.current_model = "clustering"
-    
+
     # 1. Concept Overview
     theory_section(
         title="Concept Overview",
@@ -62,7 +65,7 @@ def main() -> None:
         image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Cluster-2.svg/800px-Cluster-2.svg.png",
         columns=(2, 1),
     )
-    
+
     # Mathematical formulation (not in expander since content is short)
     math_equation(
         equation=r"J = \sum_{i=1}^{k} \sum_{x \in C_i} \|x - \mu_i\|^2",
@@ -71,59 +74,63 @@ def main() -> None:
             "k": "Number of clusters",
             "C_i": "Set of points in cluster i",
             "x": "Data point",
-            "\\mu_i": "Centroid of cluster i"
+            "\\mu_i": "Centroid of cluster i",
         },
         title="K-means Objective Function",
         icon="🧮",
         expandable=False,
     )
-    
+
     # Additional metrics (not in expander since content is short)
     st.markdown("**Silhouette Score:**")
     st.latex(r"s(i) = \frac{b(i) - a(i)}{\max\{a(i), b(i)\}}")
     st.markdown("Where:")
-    st.markdown(r"- $a(i)$: Average distance from point $i$ to other points in same cluster")
-    st.markdown(r"- $b(i)$: Average distance from point $i$ to points in nearest neighboring cluster")
-    
+    st.markdown(
+        r"- $a(i)$: Average distance from point $i$ to other points in same cluster"
+    )
+    st.markdown(
+        r"- $b(i)$: Average distance from point $i$ to points in nearest neighboring cluster"
+    )
+
     st.markdown("**DBSCAN Density:**")
     st.latex(r"N_\epsilon(p) = \{q \in D \mid \text{dist}(p, q) \leq \epsilon\}")
     st.markdown("Where:")
     st.markdown(r"- $N_\epsilon(p)$: $\epsilon$-neighborhood of point $p$")
     st.markdown(r"- $\epsilon$: Maximum distance between points")
     st.markdown(r"- $\text{minPts}$: Minimum points to form a dense region")
-    
+
     # 2. Interactive Demo
     st.header("🎮 Interactive Demo")
-    
+
     # Create columns for demo layout
     demo_col1, demo_col2 = st.columns([1, 2])
-    
+
     with demo_col1:
         st.subheader("⚙️ Dataset Parameters")
-        
+
         dataset_type = st.selectbox(
             "Dataset Type",
             ["blobs", "moons", "circles", "anisotropic", "random"],
             index=0,
-            help="Type of synthetic dataset to generate"
+            help="Type of synthetic dataset to generate",
         )
-        
+
         n_samples = st.slider(
             "Sample Size",
             min_value=50,
             max_value=1000,
             value=300,
             step=50,
-            help="Number of data points to generate"
+            help="Number of data points to generate",
         )
-        
+
         if dataset_type == "blobs":
             n_clusters = st.slider(
                 "True Clusters",
                 min_value=2,
                 max_value=10,
                 value=4,
-                help="Actual number of clusters in the data"
+                help="Actual number of clusters in the data",
             )
             cluster_std = st.slider(
                 "Cluster Spread",
@@ -131,7 +138,7 @@ def main() -> None:
                 max_value=2.0,
                 value=0.5,
                 step=0.1,
-                help="Standard deviation of clusters"
+                help="Standard deviation of clusters",
             )
         else:
             noise = st.slider(
@@ -140,24 +147,24 @@ def main() -> None:
                 max_value=0.3,
                 value=0.05,
                 step=0.01,
-                help="Amount of noise in the dataset"
+                help="Amount of noise in the dataset",
             )
-        
+
         st.subheader("🔧 Algorithm Selection")
-        
+
         algorithm = st.selectbox(
             "Clustering Algorithm",
             ["K-means", "DBSCAN", "Hierarchical", "GMM"],
             index=0,
-            help="Algorithm to apply to the data"
+            help="Algorithm to apply to the data",
         )
-        
+
         scale_data = st.checkbox(
             "Scale Features",
             value=True,
-            help="Standardize features before clustering (recommended for distance-based algorithms)"
+            help="Standardize features before clustering (recommended for distance-based algorithms)",
         )
-        
+
         # Algorithm-specific parameters
         if algorithm == "K-means":
             k_value = st.slider(
@@ -165,16 +172,16 @@ def main() -> None:
                 min_value=2,
                 max_value=10,
                 value=4,
-                help="Number of clusters to find"
+                help="Number of clusters to find",
             )
             random_state = st.number_input(
                 "Random Seed",
                 min_value=0,
                 max_value=100,
                 value=42,
-                help="Random seed for reproducibility"
+                help="Random seed for reproducibility",
             )
-            
+
         elif algorithm == "DBSCAN":
             eps = st.slider(
                 "Epsilon (ε)",
@@ -182,49 +189,51 @@ def main() -> None:
                 max_value=2.0,
                 value=0.5,
                 step=0.1,
-                help="Maximum distance between points in the same neighborhood"
+                help="Maximum distance between points in the same neighborhood",
             )
             min_samples = st.slider(
                 "Min Samples",
                 min_value=2,
                 max_value=20,
                 value=5,
-                help="Minimum number of points to form a dense region"
+                help="Minimum number of points to form a dense region",
             )
-            
+
         elif algorithm == "Hierarchical":
             linkage_method = st.selectbox(
                 "Linkage Method",
                 ["ward", "complete", "average", "single"],
                 index=0,
-                help="Linkage criterion for hierarchical clustering"
+                help="Linkage criterion for hierarchical clustering",
             )
             n_clusters_h = st.slider(
                 "Number of Clusters",
                 min_value=2,
                 max_value=10,
                 value=4,
-                help="Number of clusters to find"
+                help="Number of clusters to find",
             )
-            
+
         elif algorithm == "GMM":
             n_components = st.slider(
                 "Number of Components",
                 min_value=2,
                 max_value=10,
                 value=4,
-                help="Number of Gaussian mixture components"
+                help="Number of Gaussian mixture components",
             )
             covariance_type = st.selectbox(
                 "Covariance Type",
                 ["full", "tied", "diag", "spherical"],
                 index=0,
-                help="Type of covariance parameters to use"
+                help="Type of covariance parameters to use",
             )
-    
+
     with demo_col2:
         # Run demo button
-        if st.button("🚀 Run Clustering Analysis", type="primary", use_container_width=True):
+        if st.button(
+            "🚀 Run Clustering Analysis", type="primary", use_container_width=True
+        ):
             with st.spinner("Generating data and applying clustering algorithm..."):
                 # Generate data based on selected parameters
                 if dataset_type == "blobs":
@@ -232,82 +241,81 @@ def main() -> None:
                         n_samples=n_samples,
                         n_clusters=n_clusters,
                         cluster_std=cluster_std,
-                        random_state=42
+                        random_state=42,
                     )
                 elif dataset_type in ["moons", "circles", "anisotropic"]:
                     X, y_true = generate_complex_clustering_data(
                         n_samples=n_samples,
                         dataset_type=dataset_type,
                         noise=noise if dataset_type != "anisotropic" else 0.05,
-                        random_state=42
+                        random_state=42,
                     )
                 else:  # random
                     X = np.random.randn(n_samples, 2)
                     y_true = np.zeros(n_samples)
-                
+
                 # Apply selected algorithm
                 if algorithm == "K-means":
                     result = apply_kmeans(
-                        X, 
-                        n_clusters=k_value, 
+                        X,
+                        n_clusters=k_value,
                         random_state=random_state,
-                        scale_data=scale_data
+                        scale_data=scale_data,
                     )
                     labels = result["labels"]
                     centers = result["centers"]
-                    
+
                 elif algorithm == "DBSCAN":
                     result = apply_dbscan(
-                        X,
-                        eps=eps,
-                        min_samples=min_samples,
-                        scale_data=scale_data
+                        X, eps=eps, min_samples=min_samples, scale_data=scale_data
                     )
                     labels = result["labels"]
                     centers = None
-                    
+
                 elif algorithm == "Hierarchical":
                     result = apply_hierarchical(
                         X,
                         n_clusters=n_clusters_h,
                         linkage=linkage_method,
-                        scale_data=scale_data
+                        scale_data=scale_data,
                     )
                     labels = result["labels"]
                     centers = None
-                    
+
                 elif algorithm == "GMM":
                     result = apply_gmm(
                         X,
                         n_components=n_components,
                         covariance_type=covariance_type,
                         random_state=42,
-                        scale_data=scale_data
+                        scale_data=scale_data,
                     )
                     labels = result["labels"]
                     centers = None
-                
+
                 # Create visualizations
                 tab1, tab2, tab3 = st.tabs(["2D Clusters", "3D View", "True Labels"])
-                
+
                 with tab1:
                     fig = visualize_clusters_2d(
-                        X, 
-                        labels, 
+                        X,
+                        labels,
                         title=f"{algorithm} Clustering Results",
-                        centers=centers
+                        centers=centers,
                     )
                     st.plotly_chart(fig, use_container_width=True)
-                    
+
                     # Show cluster statistics
                     unique_labels = np.unique(labels)
-                    n_clusters_found = len(unique_labels) - (1 if -1 in unique_labels else 0)
+                    n_clusters_found = len(unique_labels) - (
+                        1 if -1 in unique_labels else 0
+                    )
                     st.metric("Clusters Found", n_clusters_found)
-                    
+
                     if algorithm == "DBSCAN" and -1 in unique_labels:
                         n_noise = np.sum(labels == -1)
                         st.metric("Noise Points", n_noise)
-                
+
                 with tab2:
                     if X.shape[1] >= 2:
                         # Add a third dimension if needed
@@ -315,68 +323,69 @@ def main() -> None:
                             X_3d = np.hstack([X, np.zeros((X.shape[0], 1))])
                         else:
                             X_3d = X[:, :3]
-                        
+
                         fig_3d = visualize_clusters_3d(
-                            X_3d,
-                            labels,
-                            title=f"{algorithm} - 3D View"
+                            X_3d, labels, title=f"{algorithm} - 3D View"
                         )
                         st.plotly_chart(fig_3d, use_container_width=True)
                     else:
                         st.info("3D visualization requires at least 2 dimensions")
-                
+
                 with tab3:
                     if dataset_type != "random":
                         fig_true = visualize_clusters_2d(
-                            X,
-                            y_true,
-                            title="True Cluster Labels",
-                            centers=None
+                            X, y_true, title="True Cluster Labels", centers=None
                         )
                         st.plotly_chart(fig_true, use_container_width=True)
                         st.metric("True Clusters", len(np.unique(y_true)))
                     else:
                         st.info("Random data has no true labels")
-                
+
                 # Performance metrics
                 st.subheader("📊 Performance Metrics")
                 metrics = calculate_clustering_metrics(X, labels)
-                
+
                 if metrics:
                     col_metric1, col_metric2 = st.columns(2)
-                    
+
                     with col_metric1:
-                        if "silhouette_score" in metrics and not np.isnan(metrics["silhouette_score"]):
+                        if "silhouette_score" in metrics and not np.isnan(
+                            metrics["silhouette_score"]
+                        ):
                             st.metric(
                                 "Silhouette Score",
                                 f"{metrics['silhouette_score']:.3f}",
-                                help="Higher is better (-1 to 1)"
+                                help="Higher is better (-1 to 1)",
                             )
-                        
-                        if "calinski_harabasz_score" in metrics and not np.isnan(metrics["calinski_harabasz_score"]):
+
+                        if "calinski_harabasz_score" in metrics and not np.isnan(
+                            metrics["calinski_harabasz_score"]
+                        ):
                             st.metric(
                                 "Calinski-Harabasz",
                                 f"{metrics['calinski_harabasz_score']:.1f}",
-                                help="Higher is better"
+                                help="Higher is better",
                             )
-                    
+
                     with col_metric2:
-                        if "davies_bouldin_score" in metrics and not np.isnan(metrics["davies_bouldin_score"]):
+                        if "davies_bouldin_score" in metrics and not np.isnan(
+                            metrics["davies_bouldin_score"]
+                        ):
                             st.metric(
                                 "Davies-Bouldin",
                                 f"{metrics['davies_bouldin_score']:.3f}",
-                                help="Lower is better (0 to ∞)"
+                                help="Lower is better (0 to ∞)",
                             )
-                        
+
                         if algorithm == "K-means" and "inertia" in result:
                             st.metric(
                                 "Inertia",
                                 f"{result['inertia']:.1f}",
-                                help="Within-cluster sum of squares (lower is better)"
+                                help="Within-cluster sum of squares (lower is better)",
                             )
                 else:
                     st.info("Metrics require at least 2 clusters")
-                
+
                 # Algorithm-specific metrics
                 if algorithm == "DBSCAN":
                     st.subheader("DBSCAN Stats")
@@ -384,7 +393,7 @@ def main() -> None:
                     st.write(f"**Noise Points:** {result['n_noise']}")
                     st.write(f"**Epsilon:** {result['eps']}")
                     st.write(f"**Min Samples:** {result['min_samples']}")
-                
+
                 elif algorithm == "GMM":
                     st.subheader("GMM Stats")
                     st.write(f"**Components:** {result['n_components']}")
@@ -392,71 +401,79 @@ def main() -> None:
                     st.write(f"**BIC:** {result['bic']:.1f}")
                     st.write(f"**AIC:** {result['aic']:.1f}")
                     st.write(f"**Converged:** {result['converged']}")
-                
+
                 # Optimal K analysis (for K-means)
                 if algorithm == "K-means":
                     st.subheader("🔍 Optimal K Analysis")
-                    
+
                     if st.button("Find Optimal K", type="secondary"):
                         with st.spinner("Analyzing optimal number of clusters..."):
                             optimal_k_result = find_optimal_k(
-                                X,
-                                k_range=(2, 10),
-                                scale_data=scale_data
+                                X, k_range=(2, 10), scale_data=scale_data
                             )
-                            
+
                             # Store in session state
                             st.session_state.optimal_k_result = optimal_k_result
-                    
+
                     if "optimal_k_result" in st.session_state:
                         result_opt = st.session_state.optimal_k_result
-                        st.success(f"Optimal k (Silhouette): {result_opt['optimal_k_silhouette']}")
+                        st.success(
+                            f"Optimal k (Silhouette): {result_opt['optimal_k_silhouette']}"
+                        )
                         st.info(f"Optimal k (Elbow): {result_opt['optimal_k_elbow']}")
-                        
+
                         # Plot elbow curve
                         k_values = list(result_opt["results"].keys())
-                        inertias = [result_opt["results"][k]["inertia"] for k in k_values]
-                        silhouette_scores = [result_opt["results"][k]["silhouette_score"] for k in k_values]
-                        
+                        inertias = [
+                            result_opt["results"][k]["inertia"] for k in k_values
+                        ]
+                        silhouette_scores = [
+                            result_opt["results"][k]["silhouette_score"]
+                            for k in k_values
+                        ]
+
                         fig_elbow = go.Figure()
-                        fig_elbow.add_trace(go.Scatter(
-                            x=k_values,
-                            y=inertias,
-                            mode="lines+markers",
-                            name="Inertia",
-                            line=dict(color="blue", width=2)
-                        ))
-                        
+                        fig_elbow.add_trace(
+                            go.Scatter(
+                                x=k_values,
+                                y=inertias,
+                                mode="lines+markers",
+                                name="Inertia",
+                                line=dict(color="blue", width=2),
+                            )
+                        )
+
                         # Add silhouette scores on secondary y-axis
-                        fig_elbow.add_trace(go.Scatter(
-                            x=k_values,
-                            y=silhouette_scores,
-                            mode="lines+markers",
-                            name="Silhouette Score",
-                            yaxis="y2",
-                            line=dict(color="green", width=2, dash="dash")
-                        ))
-                        
+                        fig_elbow.add_trace(
+                            go.Scatter(
+                                x=k_values,
+                                y=silhouette_scores,
+                                mode="lines+markers",
+                                name="Silhouette Score",
+                                yaxis="y2",
+                                line=dict(color="green", width=2, dash="dash"),
+                            )
+                        )
+
                         fig_elbow.update_layout(
                             title="Elbow Method & Silhouette Analysis",
                             xaxis_title="Number of Clusters (k)",
                             yaxis_title="Inertia",
                             yaxis2=dict(
-                                title="Silhouette Score",
-                                overlaying="y",
-                                side="right"
+                                title="Silhouette Score", overlaying="y", side="right"
                             ),
                             hovermode="x unified",
-                            showlegend=True
+                            showlegend=True,
                         )
-                        
+
                         st.plotly_chart(fig_elbow, use_container_width=True)
-    
+
     # 3. Implementation Examples
     st.header("💻 Implementation Examples")
-    
-    code_tabs({
-        "K-means with scikit-learn": """
+
+    code_tabs(
+        {
+            "K-means with scikit-learn": """
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 import numpy as np
@@ -479,8 +496,7 @@ inertia = kmeans.inertia_
 print(f"Found {len(np.unique(labels))} clusters")
 print(f"Inertia: {inertia:.2f}")
 """,
-        
-        "DBSCAN for density-based clustering": """
+            "DBSCAN for density-based clustering": """
 from sklearn.cluster import DBSCAN
 from sklearn.preprocessing import StandardScaler
 import numpy as np
@@ -505,8 +521,7 @@ print(f"Found {n_clusters} clusters")
 print(f"Noise points: {n_noise}")
 print(f"Labels: {unique_labels}")
 """,
-        
-        "Hierarchical clustering with different linkages": """
+            "Hierarchical clustering with different linkages": """
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.preprocessing import StandardScaler
 import numpy as np
@@ -527,8 +542,7 @@ for linkage in ['ward', 'complete', 'average', 'single']:
     labels = hierarchical.fit_predict(X_scaled)
     print(f"{linkage} linkage - Labels: {np.unique(labels)}")
 """,
-        
-        "Gaussian Mixture Models for probabilistic clustering": """
+            "Gaussian Mixture Models for probabilistic clustering": """
 from sklearn.mixture import GaussianMixture
 from sklearn.preprocessing import StandardScaler
 import numpy as np
@@ -553,12 +567,13 @@ print(f"Found {len(np.unique(labels))} clusters")
 print(f"BIC: {gmm.bic(X_scaled):.1f}")
 print(f"AIC: {gmm.aic(X_scaled):.1f}")
 print(f"Converged: {gmm.converged_}")
-"""
-    })
-    
+""",
+        }
+    )
+
     # 4. Real-World Applications (in tabs)
     st.header("💼 Real-World Applications")
-    
+
     applications_data = {
         "Customer Segmentation": {
             "description": "Group customers based on purchasing behavior, demographics, and preferences.",
@@ -566,8 +581,8 @@ print(f"Converged: {gmm.converged_}")
             "examples": [
                 "E-commerce customer segmentation for personalized offers",
                 "Banking customer profiling for tailored financial products",
-                "Subscription service user groups for content recommendations"
-            ]
+                "Subscription service user groups for content recommendations",
+            ],
         },
         "Image Segmentation": {
             "description": "Group pixels in images based on color, texture, or other features.",
@@ -575,8 +590,8 @@ print(f"Converged: {gmm.converged_}")
             "examples": [
                 "Medical image analysis for tumor detection",
                 "Satellite image classification for land use mapping",
-                "Facial recognition systems for security applications"
-            ]
+                "Facial recognition systems for security applications",
+            ],
         },
         "Anomaly Detection": {
             "description": "Identify unusual patterns or outliers in data that deviate from normal behavior.",
@@ -584,8 +599,8 @@ print(f"Converged: {gmm.converged_}")
             "examples": [
                 "Credit card fraud detection systems",
                 "Network intrusion detection for cybersecurity",
-                "Manufacturing defect detection in production lines"
-            ]
+                "Manufacturing defect detection in production lines",
+            ],
         },
         "Document Clustering": {
             "description": "Group similar documents for organization, retrieval, and topic modeling.",
@@ -593,68 +608,68 @@ print(f"Converged: {gmm.converged_}")
             "examples": [
                 "News article categorization for media platforms",
                 "Research paper organization for academic databases",
-                "Customer support ticket grouping for efficient resolution"
-            ]
-        }
+                "Customer support ticket grouping for efficient resolution",
+            ],
+        },
     }
-    
+
     app_tabs = st.tabs(list(applications_data.keys()))
-    
+
     for tab, (app_name, app_info) in zip(app_tabs, applications_data.items()):
         with tab:
             st.subheader(app_name)
             st.markdown(f"**Description:** {app_info['description']}")
             st.markdown(f"**Details:** {app_info['details']}")
             st.markdown("**Examples:**")
-            for example in app_info['examples']:
+            for example in app_info["examples"]:
                 st.markdown(f"- {example}")
-    
+
     # 5. Common Pitfalls & Fixes (in tabs)
     st.header("⚠️ Common Pitfalls & Fixes")
-    
+
     pitfalls_data = {
         "Choosing Wrong Algorithm": {
             "problem": "Selecting an inappropriate clustering algorithm for the data type or problem.",
             "detection": "Poor clustering results, unnatural cluster shapes, or inability to find meaningful patterns.",
-            "solution": "Understand algorithm assumptions: K-means for spherical clusters, DBSCAN for density-based, hierarchical for hierarchical structures."
+            "solution": "Understand algorithm assumptions: K-means for spherical clusters, DBSCAN for density-based, hierarchical for hierarchical structures.",
         },
         "Incorrect Distance Metric": {
             "problem": "Using inappropriate distance measures that don't capture data similarity correctly.",
             "detection": "Clusters don't reflect natural groupings, similar points end up in different clusters.",
-            "solution": "Choose metric based on data type: Euclidean for continuous, Manhattan for grid-like, cosine for text, Jaccard for binary."
+            "solution": "Choose metric based on data type: Euclidean for continuous, Manhattan for grid-like, cosine for text, Jaccard for binary.",
         },
         "Scale Sensitivity": {
             "problem": "Algorithms like K-means are sensitive to feature scales, giving undue importance to features with larger ranges.",
             "detection": "Features with larger ranges dominate clustering, distorting results.",
-            "solution": "Always scale features (standardization or normalization) before applying distance-based algorithms."
+            "solution": "Always scale features (standardization or normalization) before applying distance-based algorithms.",
         },
         "Determining Optimal K": {
             "problem": "Difficulty in choosing the right number of clusters, especially for algorithms like K-means.",
             "detection": "Unclear elbow point in elbow method, ambiguous silhouette scores.",
-            "solution": "Use multiple methods: elbow method, silhouette analysis, gap statistic, and domain knowledge."
+            "solution": "Use multiple methods: elbow method, silhouette analysis, gap statistic, and domain knowledge.",
         },
         "Handling Noise & Outliers": {
             "problem": "Noise points can distort cluster boundaries and centroids, especially in density-based methods.",
             "detection": "Many points classified as noise, unstable cluster boundaries.",
-            "solution": "Use robust algorithms like DBSCAN, pre-process data to remove outliers, or use noise-handling variants."
-        }
+            "solution": "Use robust algorithms like DBSCAN, pre-process data to remove outliers, or use noise-handling variants.",
+        },
     }
-    
+
     pitfall_tabs = st.tabs(list(pitfalls_data.keys()))
-    
+
     for tab, (pitfall_name, pitfall_info) in zip(pitfall_tabs, pitfalls_data.items()):
         with tab:
             st.subheader(pitfall_name)
             st.markdown(f"**Problem:** {pitfall_info['problem']}")
             st.markdown(f"**How to Detect:** {pitfall_info['detection']}")
             st.markdown(f"**Solution:** {pitfall_info['solution']}")
-    
+
     # 6. References & Further Reading (in expander)
     st.header("📚 References & Further Reading")
-    
+
     with st.expander("Click to view references", expanded=False):
         display_references(get_clustering_references())
-    
+
     # Footer
     st.markdown("---")
     st.caption(
@@ -666,4 +681,3 @@ print(f"Converged: {gmm.converged_}")
 
 if __name__ == "__main__":
     main()
-        

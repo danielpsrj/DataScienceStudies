@@ -251,12 +251,72 @@ ruff format .
 
 ## 🤝 Contributing
 
+### For Human Contributors
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
 4. Add tests for new functionality
 5. Ensure all tests pass
 6. Submit a pull request
+
+### 🤖 Contributing as an AI Agent
+The Data Science Platform includes special tools and guidelines for AI contributors to ensure consistent, high-quality contributions.
+
+#### 📋 Quick Start for AI
+```bash
+# 1. Always start with tests
+cd data-science-platform
+source .venv/bin/activate
+python -m pytest tests/ -v
+
+# 2. Use the template for new pages
+cp app/pages/template_concept_page.py app/pages/03_📊_new_concept.py
+
+# 3. Run validation before committing
+python scripts/validate_all.py app/pages/03_📊_new_concept.py
+```
+
+#### 📚 Essential Resources for AI
+- **`AI_DEVELOPMENT_GUIDE.md`** - Comprehensive guide for AI contributors
+- **`app/pages/template_concept_page.py`** - Template for new concept pages
+- **`scripts/validate_*.py`** - Validation scripts for quality assurance
+- **`.pre-commit-config.yaml`** - Automated quality checks
+
+#### 🏗️ Required Page Structure
+All concept pages MUST follow this 6-section structure:
+1. **Concept Overview** (`theory_section` component)
+2. **Interactive Demo** (controls in columns, NOT sidebar)
+3. **Implementation Examples** (`code_tabs` component)
+4. **Real-World Applications** (in interactive tabs)
+5. **Common Pitfalls & Fixes** (in interactive tabs)
+6. **References & Further Reading** (inside expander)
+
+#### 🔧 Validation Requirements
+Before committing, AI agents MUST run:
+```bash
+# Comprehensive validation
+python scripts/validate_all.py <your_page.py>
+
+# Or individual validations
+python scripts/validate_page_structure.py <your_page.py>
+python scripts/validate_components.py <your_page.py>
+```
+
+#### 🚫 Anti-Patterns to Avoid
+- ❌ Putting demo controls in sidebar
+- ❌ Creating custom UI components without checking `app/components/` first
+- ❌ Deviating from the 6-section structure
+- ❌ Skipping tests for "simple" features
+
+#### ✅ Success Checklist
+- [ ] All tests pass (`python -m pytest tests/ -v`)
+- [ ] Page follows 6-section structure
+- [ ] Demo controls are in columns (not sidebar)
+- [ ] Applications and pitfalls are in tabs
+- [ ] References are in expander
+- [ ] Validation scripts pass (`python scripts/validate_all.py`)
+
+For detailed instructions, see [AI_DEVELOPMENT_GUIDE.md](AI_DEVELOPMENT_GUIDE.md).
 
 ## 📄 License
 

@@ -2,6 +2,7 @@
 FastAPI service for the Data Science Platform.
 Provides REST API endpoints for data science concepts and operations.
 """
+
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -116,10 +117,12 @@ async def get_concept_info(concept_name: str) -> Dict[str, Any]:
             "parameters": ["n_clusters", "max_iter", "random_state"],
         },
     }
-    
+
     if concept_name not in concepts:
-        raise HTTPException(status_code=404, detail=f"Concept '{concept_name}' not found")
-    
+        raise HTTPException(
+            status_code=404, detail=f"Concept '{concept_name}' not found"
+        )
+
     return concepts[concept_name]
 
 
@@ -139,13 +142,13 @@ async def generate_linear_regression_data(
             noise=noise,
             random_state=random_state or 42,
         )
-        
+
         # Convert to lists for JSON serialization
         if n_features == 1:
             X_list = X.flatten().tolist()
         else:
             X_list = X.tolist()
-        
+
         return {
             "n_samples": n_samples,
             "n_features": n_features,
@@ -158,7 +161,9 @@ async def generate_linear_regression_data(
                 "X_std": float(X.std()),
                 "y_mean": float(y.mean()),
                 "y_std": float(y.std()),
-                "correlation": float(np.corrcoef(X.flatten(), y)[0, 1]) if n_features == 1 else None,
+                "correlation": float(np.corrcoef(X.flatten(), y)[0, 1])
+                if n_features == 1
+                else None,
             },
         }
     except Exception as e:
@@ -177,21 +182,24 @@ async def train_linear_regression_model(
         # Convert to numpy arrays
         X_array = np.array(X)
         y_array = np.array(y)
-        
+
         # Validate input shapes
         if len(X_array.shape) == 1:
             X_array = X_array.reshape(-1, 1)
-        
+
         if X_array.shape[0] != len(y_array):
-            raise ValueError(f"X has {X_array.shape[0]} samples but y has {len(y_array)}")
-        
+            raise ValueError(
+                f"X has {X_array.shape[0]} samples but y has {len(y_array)}"
+            )
+
         # Train model
         results = train_linear_regression(
-            X_array, y_array,
+            X_array,
+            y_array,
             test_size=test_size,
             random_state=random_state or 42,
         )
-        
+
         # Prepare response
         response = {
             "model_type": "linear_regression",
@@ -208,16 +216,16 @@ async def train_linear_regression_model(
                 "y_pred": results["y_pred"].tolist(),
             },
         }
-        
+
         # Add feature names if available
         if X_array.shape[1] > 1:
             response["feature_importance"] = {
                 f"feature_{i}": float(abs(coef))
                 for i, coef in enumerate(results["model"].coef_)
             }
-        
+
         return response
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error training model: {str(e)}")
 
@@ -227,7 +235,9 @@ async def compare_regularization_methods(
     n_samples: int = Query(100, ge=10, le=1000, description="Number of samples"),
     n_features: int = Query(5, ge=2, le=20, description="Number of features"),
     noise: float = Query(0.2, ge=0.0, le=1.0, description="Noise level"),
-    alphas: str = Query("0.01,0.1,1.0,10.0", description="Comma-separated alpha values"),
+    alphas: str = Query(
+        "0.01,0.1,1.0,10.0", description="Comma-separated alpha values"
+    ),
     test_size: float = Query(0.2, ge=0.1, le=0.5, description="Test set proportion"),
     random_state: Optional[int] = Query(None, description="Random seed"),
 ) -> Dict[str, Any]:
@@ -235,7 +245,7 @@ async def compare_regularization_methods(
     try:
         # Parse alphas
         alpha_list = [float(a.strip()) for a in alphas.split(",")]
-        
+
         # Generate data
         X, y = generate_linear_data(
             n_samples=n_samples,
@@ -243,18 +253,19 @@ async def compare_regularization_methods(
             noise=noise,
             random_state=random_state or 42,
         )
-        
+
         # Compare regularization
         df_comparison = compare_regularization(
-            X, y,
+            X,
+            y,
             alphas=alpha_list,
             test_size=test_size,
             random_state=random_state or 42,
         )
-        
+
         # Convert to dictionary
         results = df_comparison.to_dict(orient="records")
-        
+
         return {
             "n_samples": n_samples,
             "n_features": n_features,
@@ -263,17 +274,23 @@ async def compare_regularization_methods(
             "test_size": test_size,
             "comparison": results,
             "best_ridge": {
-                "alpha": float(df_comparison.loc[df_comparison["ridge_r2"].idxmax(), "alpha"]),
+                "alpha": float(
+                    df_comparison.loc[df_comparison["ridge_r2"].idxmax(), "alpha"]
+                ),
                 "r2": float(df_comparison["ridge_r2"].max()),
             },
             "best_lasso": {
-                "alpha": float(df_comparison.loc[df_comparison["lasso_r2"].idxmax(), "alpha"]),
+                "alpha": float(
+                    df_comparison.loc[df_comparison["lasso_r2"].idxmax(), "alpha"]
+                ),
                 "r2": float(df_comparison["lasso_r2"].max()),
             },
         }
-        
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error comparing regularization: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error comparing regularization: {str(e)}"
+        )
 
 
 # Example endpoint
@@ -282,10 +299,10 @@ async def regression_example() -> Dict[str, Any]:
     """Example regression workflow."""
     # Generate data
     X, y = generate_linear_data(n_samples=100, noise=0.2)
-    
+
     # Train model
     results = train_linear_regression(X, y)
-    
+
     return {
         "example": "linear_regression_workflow",
         "data_generation": {
@@ -307,7 +324,7 @@ async def regression_example() -> Dict[str, Any]:
             "coefficients": {k: float(v) for k, v in results["coefficients"].items()},
         },
         "code_example": {
-            "python": '''import numpy as np
+            "python": """import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 
@@ -329,7 +346,7 @@ r2 = 1 - mse / np.var(y_test)
 
 print(f"Slope: {model.coef_[0]:.3f}")
 print(f"Intercept: {model.intercept_:.3f}")
-print(f"MSE: {mse:.3f}, R²: {r2:.3f}")''',
+print(f"MSE: {mse:.3f}, R²: {r2:.3f}")""",
         },
     }
 
@@ -362,7 +379,7 @@ async def general_exception_handler(request, exc):
 
 if __name__ == "__main__":
     import uvicorn
-    
+
     uvicorn.run(
         "app.api.main:app",
         host=settings.api_host,

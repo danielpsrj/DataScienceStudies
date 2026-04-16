@@ -1,6 +1,7 @@
 """
 Mathematical equation component for concept pages.
 """
+
 from typing import Optional, Dict
 import streamlit as st
 
@@ -14,7 +15,7 @@ def math_equation(
 ) -> None:
     """
     Display mathematical equation with variable explanations.
-    
+
     Args:
         equation: LaTeX equation string (without $$ delimiters)
         variables: Dictionary of {variable: description}
@@ -34,16 +35,16 @@ def _display_equation(equation: str, variables: Optional[Dict[str, str]]) -> Non
     """Display equation and variables."""
     # Display equation
     st.latex(equation)
-    
+
     # Display variable explanations
     if variables:
         st.markdown("**Where:**")
-        
+
         # Create columns for better layout if many variables
         if len(variables) > 4:
             cols = st.columns(2)
             col_idx = 0
-            
+
             for var, desc in variables.items():
                 with cols[col_idx % 2]:
                     st.markdown(f"- ${var}$: {desc}")
@@ -60,7 +61,7 @@ def matrix_equation(
 ) -> None:
     """
     Display a matrix equation.
-    
+
     Args:
         matrix_name: Name of the matrix
         elements: 2D list of matrix elements as strings
@@ -70,12 +71,12 @@ def matrix_equation(
     rows = []
     for row in elements:
         rows.append(" & ".join(row))
-    
+
     matrix_latex = r"\begin{bmatrix} " + r" \\ ".join(rows) + r" \end{bmatrix}"
-    
+
     # Display
     st.latex(f"{matrix_name} = {matrix_latex}")
-    
+
     if description:
         st.markdown(f"*{description}*")
 
@@ -87,14 +88,14 @@ def derivation_steps(
 ) -> None:
     """
     Display derivation steps with explanations.
-    
+
     Args:
         steps: List of (step_latex, explanation) tuples
         title: Section title
         icon: Icon to display before title
     """
     st.subheader(f"{icon} {title}")
-    
+
     for i, (step_latex, explanation) in enumerate(steps, 1):
         with st.container(border=True):
             st.markdown(f"**Step {i}**")
@@ -109,7 +110,7 @@ def probability_notation(
 ) -> None:
     """
     Display probability notation with explanation.
-    
+
     Args:
         notation: Probability notation (e.g., P(X|Y))
         meaning: Meaning of the notation
@@ -117,13 +118,13 @@ def probability_notation(
     """
     with st.container(border=True):
         col1, col2 = st.columns([1, 3])
-        
+
         with col1:
             st.latex(notation)
-        
+
         with col2:
             st.markdown(f"**Meaning:** {meaning}")
-            
+
             if examples:
                 st.markdown("**Examples:**")
                 for example in examples:

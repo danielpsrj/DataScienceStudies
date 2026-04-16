@@ -2,6 +2,7 @@
 Main entry point for the Streamlit Data Science Platform.
 This file sets up the application configuration and serves as the router.
 """
+
 import streamlit as st
 
 from app.config import settings
@@ -36,38 +37,40 @@ def setup_sidebar() -> None:
     with st.sidebar:
         st.title(f"🧪 {settings.app_name}")
         st.markdown("---")
-        
+
         # Environment indicator
         env_color = {
             "development": "🟢",
             "staging": "🟡",
             "production": "🔴",
         }.get(settings.app_env, "⚪")
-        
+
         st.caption(f"{env_color} {settings.app_env.upper()}")
-        
+
         # Navigation info
         state = get_state()
         if state.page_history:
             st.caption(f"📚 Pages visited: {len(state.page_history)}")
-        
+
         # Quick actions
         st.markdown("### Quick Actions")
-        
+
         col1, col2 = st.columns(2)
         with col1:
             if st.button("🔄 Clear Cache", use_container_width=True):
                 from app.caching import clear_all_caches
+
                 clear_all_caches()
                 st.success("Cache cleared!")
                 st.rerun()
-        
+
         with col2:
             if st.button("📊 Show Stats", use_container_width=True):
                 from app.caching import get_cache_stats
+
                 stats = get_cache_stats()
                 st.json(stats)
-        
+
         # User preferences
         with st.expander("⚙️ Preferences"):
             show_code = st.checkbox(
@@ -76,23 +79,23 @@ def setup_sidebar() -> None:
                 key="pref_show_code",
             )
             state.update_preference("show_code", show_code)
-            
+
             auto_run = st.checkbox(
                 "Auto-run examples",
                 value=state.get_preference("auto_run", False),
                 key="pref_auto_run",
             )
             state.update_preference("auto_run", auto_run)
-        
+
         # Debug info (only in development)
         if settings.debug:
             with st.expander("🐛 Debug Info"):
                 st.json(state.to_dict())
-                
+
                 if st.button("Reset State"):
                     state.reset()
                     st.rerun()
-        
+
         st.markdown("---")
         st.markdown(
             """
@@ -109,7 +112,7 @@ def setup_main_content() -> None:
     """Set up the main content area."""
     # Welcome message
     st.title(f"Welcome to {settings.app_name}!")
-    
+
     st.markdown("""
     ## 🚀 Explore Data Science Concepts
     
@@ -145,30 +148,32 @@ def setup_main_content() -> None:
     - Learn implementation details in Python
     - Recognize practical applications and limitations
     """)
-    
+
     # Quick start section
     with st.expander("🚀 Quick Start", expanded=True):
         col1, col2, col3 = st.columns(3)
-        
+
         with col1:
             st.markdown("### 1. Choose Concept")
             st.markdown("Select a data science concept from the sidebar navigation.")
-        
+
         with col2:
             st.markdown("### 2. Explore Theory")
             st.markdown("Read the explanation and mathematical formulation.")
-        
+
         with col3:
             st.markdown("### 3. Run Examples")
             st.markdown("Adjust parameters and run interactive examples.")
-    
+
     # API status (if available)
     try:
         import httpx
-        
+
         with st.expander("🔌 API Status", expanded=False):
             try:
-                response = httpx.get(f"http://{settings.api_host}:{settings.api_port}/health", timeout=2)
+                response = httpx.get(
+                    f"http://{settings.api_host}:{settings.api_port}/health", timeout=2
+                )
                 if response.status_code == 200:
                     st.success("✅ API is running")
                     health_data = response.json()
@@ -176,7 +181,9 @@ def setup_main_content() -> None:
                 else:
                     st.warning(f"⚠️ API returned status {response.status_code}")
             except Exception as e:
-                st.info("ℹ️ API server not running. Start it with: `uv run python -m app.api.main`")
+                st.info(
+                    "ℹ️ API server not running. Start it with: `uv run python -m app.api.main`"
+                )
     except ImportError:
         pass  # httpx not installed
 
@@ -186,14 +193,14 @@ def main() -> None:
     # Setup
     setup_page_config()
     setup_sidebar()
-    
+
     # Track page visit
     state = get_state()
     state.add_to_history("home")
-    
+
     # Main content
     setup_main_content()
-    
+
     # Footer
     st.markdown("---")
     st.caption(

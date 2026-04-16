@@ -1,0 +1,147 @@
+# Pre-commit configuration for Data Science Platform
+# This ensures code quality and structure consistency for AI contributors
+
+repos:
+  # Ruff for linting and formatting
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.6
+    hooks:
+      - id: ruff
+        name: Ruff linting
+        description: Check Python code with ruff
+        args: [--fix]
+        
+      - id: ruff-format
+        name: Ruff formatting
+        description: Format Python code with ruff
+
+  # Validate page structure for new concept pages
+  - repo: local
+    hooks:
+      - id: validate-page-structure
+        name: Validate Page Structure
+        description: Ensure concept pages follow 6-section structure
+        entry: python scripts/validate_page_structure.py
+        language: system
+        files: ^app/pages/.*\.py$
+        exclude: ^app/pages/template_concept_page\.py$
+        pass_filenames: true
+        always_run: false
+        
+      - id: validate-components
+        name: Validate Component Usage
+        description: Ensure pages use app.components properly
+        entry: python scripts/validate_components.py
+        language: system
+        files: ^app/pages/.*\.py$
+        exclude: ^app/pages/template_concept_page\.py$
+        pass_filenames: true
+        always_run: false
+
+  # Run tests before commit
+  - repo: local
+    hooks:
+      - id: run-tests
+        name: Run Tests
+        description: Run pytest to ensure changes don't break functionality
+        entry: python -m pytest tests/ -v
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [commit]
+
+  # Check for debug statements
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+        name: Check for large files
+        description: Prevent large files from being committed
+        args: ['--maxkb=500']
+        
+      - id: check-ast
+        name: Check Python AST
+        description: Check that Python files are valid
+        
+      - id: check-case-conflict
+        name: Check for case conflicts
+        description: Check for files that would conflict in case-insensitive filesystems
+        
+      - id: check-docstring-first
+        name: Check docstring comes first
+        description: Check that docstrings are at the beginning of modules
+        
+      - id: check-executables-have-shebangs
+        name: Check executables have shebangs
+        description: Check that executables have proper shebangs
+        
+      - id: check-json
+        name: Check JSON files
+        description: Check that JSON files are valid
+        
+      - id: check-merge-conflict
+        name: Check for merge conflicts
+        description: Check for files that contain merge conflict strings
+        
+      - id: check-toml
+        name: Check TOML files
+        description: Check that TOML files are valid
+        
+      - id: check-yaml
+        name: Check YAML files
+        description: Check that YAML files are valid
+        
+      - id: debug-statements
+        name: Check for debug statements
+        description: Check for Python debug statements (pdb, ipdb, etc.)
+        
+      - id: destroyed-symlinks
+        name: Check for destroyed symlinks
+        description: Check for symlinks that point to non-existent files
+        
+      - id: end-of-file-fixer
+        name: Fix end of files
+        description: Ensure files end with a newline
+        
+      - id: mixed-line-ending
+        name: Fix mixed line endings
+        description: Replace or check mixed line endings
+        args: ['--fix=lf']
+        
+      - id: trailing-whitespace
+        name: Trim trailing whitespace
+        description: Trim trailing whitespace
+
+  # Type checking with mypy (optional, can be slow)
+  # - repo: https://github.com/pre-commit/mirrors-mypy
+  #   rev: v1.15.0
+  #   hooks:
+  #     - id: mypy
+  #       name: Type checking with mypy
+  #       description: Static type checking for Python
+  #       additional_dependencies: [types-all]
+  #       args: [--ignore-missing-imports, --show-error-codes]
+  #       files: ^app/
+
+  # Security checks with bandit
+  - repo: https://github.com/PyCQA/bandit
+    rev: '1.8.3'
+    hooks:
+      - id: bandit
+        name: Security check with bandit
+        description: Find common security issues in Python code
+        args: ['-c', 'pyproject.toml']
+        files: ^app/
+
+# Default configuration
+default_language_version:
+  python: python3
+
+# Install hooks in the project's virtual environment
+default_install_hook_types: [pre-commit, commit-msg]
+
+# Fail fast - stop on first failure
+fail_fast: false
+
+# Minimum pre-commit version
+minimum_pre_commit_version: '2.9.0'

@@ -61,6 +61,13 @@ packages = ["app", "app.components", "app.logic", "app.pages", "app.data", "app.
 [tool.ruff]
 target-version = "py39"
 line-length = 88
+indent-width = 4
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.ruff.lint]
 select = [
     "E",   # pycodestyle errors
     "F",   # pyflakes
@@ -75,13 +82,6 @@ ignore = [
     "E501",  # line too long (handled by black)
     "C901",  # too complex
 ]
-
-[tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
-indent-width = 4
-
-[tool.ruff.lint]
 # Enable flake8-bugbear's B904 rule
 extend-select = ["B904"]
 
