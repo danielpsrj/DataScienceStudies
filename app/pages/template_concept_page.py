@@ -85,97 +85,95 @@ def main() -> None:
         # st.markdown(r"- $\mathbf{[symbol]}$: Description")
 
     # ==================== 2. INTERACTIVE DEMO ====================
-    st.header("🎮 Interactive Demo")
-
+   
+    with st.expander("🎮 Interactive Demo", expanded=True):
     # Demo controls at the top (horizontal layout)
-    st.subheader("⚙️ [Concept] Parameters")
-
+    
     # Create horizontal columns for controls
     # Adjust number of columns based on your parameters
-    control_col1, control_col2, control_col3, control_col4 = st.columns(4)
+        control_col1, control_col2, control_col3, control_col4 = st.columns(4)
 
-    with control_col1:
-        # Add parameter controls here
-        # Example:
-        # param1 = st.slider(
-        #     "Parameter 1",
-        #     min_value=0,
-        #     max_value=100,
-        #     value=50,
-        #     step=1,
-        #     help="Description of parameter 1"
-        # )
-        pass
+        with control_col1:
+            # Add parameter controls here
+            # Example:
+            # param1 = st.slider(
+            #     "Parameter 1",
+            #     min_value=0,
+            #     max_value=100,
+            #     value=50,
+            #     step=1,
+            #     help="Description of parameter 1"
+            # )
+            pass
 
-    with control_col2:
-        # Example:
-        # param2 = st.selectbox(
-        #     "Algorithm Type",
-        #     ["Option 1", "Option 2", "Option 3"],
-        #     index=0,
-        #     help="Description of algorithm selection"
-        # )
-        pass
+        with control_col2:
+            # Example:
+            # param2 = st.selectbox(
+            #     "Algorithm Type",
+            #     ["Option 1", "Option 2", "Option 3"],
+            #     index=0,
+            #     help="Description of algorithm selection"
+            # )
+            pass
 
-    with control_col3:
-        # Example:
-        # param3 = st.slider(
-        #     "Parameter 3",
-        #     min_value=0.0,
-        #     max_value=1.0,
-        #     value=0.5,
-        #     step=0.1,
-        #     help="Description of parameter 3"
-        # )
-        pass
+        with control_col3:
+            # Example:
+            # param3 = st.slider(
+            #     "Parameter 3",
+            #     min_value=0.0,
+            #     max_value=1.0,
+            #     value=0.5,
+            #     step=0.1,
+            #     help="Description of parameter 3"
+            # )
+            pass
 
-    with control_col4:
-        # Example:
-        # show_details = st.checkbox(
-        #     "Show Detailed Results",
-        #     value=False,
-        #     help="Display additional analysis"
-        # )
-        pass
+        with control_col4:
+            # Example:
+            # show_details = st.checkbox(
+            #     "Show Detailed Results",
+            #     value=False,
+            #     help="Display additional analysis"
+            # )
+            pass
 
-    # Run button centered below controls
-    run_col1, run_col2, run_col3 = st.columns([1, 2, 1])
-    with run_col2:
-        if st.button(
-            "🚀 Run [Concept] Analysis", type="primary", use_container_width=True
-        ):
-            with st.spinner("Running analysis..."):
-                # Generate data and run analysis
-                # Example:
-                # data = generate_data(param1, param2, param3)
-                # results = analyze_data(data)
+        # Run button centered below controls
+        run_col1, run_col2, run_col3 = st.columns([1, 2, 1])
+        with run_col2:
+            if st.button(
+                "🚀 Run [Concept] Analysis", type="primary", use_container_width=True
+            ):
+                with st.spinner("Running analysis..."):
+                    # Generate data and run analysis
+                    # Example:
+                    # data = generate_data(param1, param2, param3)
+                    # results = analyze_data(data)
 
-                # Display results
-                # col1, col2 = st.columns(2)
-                # with col1:
-                #     st.metric("Metric 1", f"{results['metric1']:.4f}")
-                #     st.metric("Metric 2", f"{results['metric2']:.4f}")
-                # with col2:
-                #     st.metric("Metric 3", f"{results['metric3']:.4f}")
-                #     st.metric("Metric 4", f"{results['metric4']:.4f}")
+                    # Display results
+                    # col1, col2 = st.columns(2)
+                    # with col1:
+                    #     st.metric("Metric 1", f"{results['metric1']:.4f}")
+                    #     st.metric("Metric 2", f"{results['metric2']:.4f}")
+                    # with col2:
+                    #     st.metric("Metric 3", f"{results['metric3']:.4f}")
+                    #     st.metric("Metric 4", f"{results['metric4']:.4f}")
 
-                # Visualize results
-                # fig = visualize_results(results, show_details=show_details)
-                # st.plotly_chart(fig, use_container_width=True)
+                    # Visualize results
+                    # fig = visualize_results(results, show_details=show_details)
+                    # st.plotly_chart(fig, use_container_width=True)
 
-                # Show raw data if applicable
-                # with st.expander("📊 Generated Data", expanded=False):
-                #     import pandas as pd
-                #     df = pd.DataFrame(data)
-                #     st.dataframe(df.head(10))
-                #     st.caption(f"Showing 10 of {len(df)} rows")
+                    # Show raw data if applicable
+                    # with st.expander("📊 Generated Data", expanded=False):
+                    #     import pandas as pd
+                    #     df = pd.DataFrame(data)
+                    #     st.dataframe(df.head(10))
+                    #     st.caption(f"Showing 10 of {len(df)} rows")
 
-                st.success("Analysis complete!")
+                    st.success("Analysis complete!")
 
     # ==================== 3. IMPLEMENTATION EXAMPLES ====================
-    st.header("💻 Implementation Examples")
-
-    code_tabs(
+    with st.expander("💻 Implementation Examples", expanded=True):
+        code_tabs(
         {
             "Library 1 Implementation": """
 # Example implementation using Library 1
@@ -350,9 +348,7 @@ print(f"Best score: {grid_search.best_score_:.4f}")
                 st.markdown(f"**Solution:** {pitfall_info['solution']}")
 
     # ==================== 6. REFERENCES & FURTHER READING ====================
-    st.header("📚 References & Further Reading")
-
-    with st.expander("Click to view references", expanded=False):
+    with st.expander("📚 References & Further Reading", expanded=False):
         # Use appropriate references function for your concept
         # Example: display_references(get_[concept]_references())
         st.markdown("""

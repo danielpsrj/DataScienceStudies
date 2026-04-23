@@ -24,38 +24,26 @@ def code_tabs(implementations: Dict[str, str]) -> None:
         with tab:
             st.code(code, language="python")
 
-            # Optional: Add download button
-            if st.button(f"📋 Copy {name} Code", key=f"copy_{name}"):
-                st.toast(f"Copied {name} code to clipboard!", icon="✅")
-                # Note: Actual clipboard copy requires JavaScript
-                # This is a visual indicator only
-
 
 def code_snippet(
     code: str,
     language: str = "python",
     title: str = "Code Snippet",
     show_line_numbers: bool = True,
-    copy_button: bool = True,
 ) -> None:
     """
-    Display a code snippet with optional copy button.
+    Display a code snippet.
 
     Args:
         code: Code string to display
         language: Programming language for syntax highlighting
         title: Optional title for the snippet
         show_line_numbers: Whether to show line numbers
-        copy_button: Whether to show copy button
     """
     if title:
         st.subheader(title)
 
     st.code(code, language=language, line_numbers=show_line_numbers)
-
-    if copy_button:
-        if st.button("📋 Copy Code", key=f"copy_{hash(code)}"):
-            st.toast("Code copied to clipboard!", icon="✅")
 
 
 def code_comparison(

@@ -14,6 +14,7 @@ Usage:
 
 import subprocess
 import sys
+import re
 from pathlib import Path
 from typing import List, Tuple
 
@@ -145,13 +146,14 @@ class ComprehensiveValidator:
             return False
 
         # Check for required sections (simplified check)
+        # Updated to recognize demo components (regression_demo, clustering_demo)
         required_patterns = [
             ("Concept Overview", r"theory_section|st\.header.*Concept"),
-            ("Interactive Demo", r"st\.header.*Interactive Demo"),
-            ("Implementation Examples", r"st\.header.*Implementation Examples"),
-            ("Real-World Applications", r"st\.header.*Real-World Applications"),
-            ("Common Pitfalls", r"st\.header.*Common Pitfalls"),
-            ("References", r"st\.header.*References"),
+            ("Interactive Demo", r"st\.header.*Interactive Demo|regression_demo\(\)|clustering_demo\(\)"),
+            ("Implementation Examples", r"st\.header.*Implementation Examples|code_tabs"),
+            ("Real-World Applications", r"st\.header.*Real-World Applications|applications_data"),
+            ("Common Pitfalls", r"st\.header.*Common Pitfalls|pitfalls_data"),
+            ("References", r"st\.header.*References|display_references"),
         ]
 
         missing_sections = []
@@ -179,8 +181,6 @@ class ComprehensiveValidator:
             return False
 
         # Check for sidebar controls in demo context
-        import re
-
         # Look for demo section
         demo_section_match = re.search(
             r"st\.header.*Interactive Demo.*?(?=st\.header|$)",
@@ -252,10 +252,6 @@ class ComprehensiveValidator:
         print(f"\n{'=' * 60}")
 
         return len(self.errors) == 0
-
-
-# Import regex module for template compliance check
-import re
 
 
 def main():

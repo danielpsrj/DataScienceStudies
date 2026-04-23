@@ -28,7 +28,12 @@ class PageStructureValidator:
         ("Concept Overview", ["theory_section", "st\\.header\\(.*Concept.*"]),
         (
             "Interactive Demo",
-            ["st\\.header\\(.*Interactive Demo.*", "demo_col1.*demo_col2"],
+            [
+                "st\\.header\\(.*Interactive Demo.*",
+                "regression_demo\\(\\)",
+                "clustering_demo\\(\\)",
+                "demo_col1.*demo_col2",
+            ],
         ),
         (
             "Implementation Examples",
@@ -163,7 +168,9 @@ class PageStructureValidator:
         """Validate demo controls are in columns, not sidebar."""
         # Check for demo columns pattern
         if not re.search(r"demo_col1.*demo_col2.*st\.columns", self.content):
-            self.warnings.append("Demo controls might not be in columns pattern")
+            # Also check for demo component usage
+            if not re.search(r"regression_demo\(\)|clustering_demo\(\)", self.content):
+                self.warnings.append("Demo controls might not be in columns pattern")
 
         # Check for sidebar usage in demo context
         demo_section = self._extract_section("Interactive Demo")

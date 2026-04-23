@@ -7,10 +7,11 @@ import streamlit as st
 from app.components import (
     code_tabs,
     display_references,
-    get_regression_references,
     math_equation,
     theory_section,
+    regression_demo,
 )
+from app.data.regression import get_regression_references
 from app.logic.regression import (
     generate_linear_data,
     plot_regression_results,
@@ -85,98 +86,7 @@ def main() -> None:
         )
 
     # 2. Interactive Demo
-    st.header("🎮 Interactive Demo")
-
-    # Demo controls at the top (horizontal layout)
-    st.subheader("⚙️ Regression Parameters")
-
-    # Create horizontal columns for controls
-    control_col1, control_col2, control_col3, control_col4 = st.columns(4)
-
-    with control_col1:
-        sample_size = st.slider(
-            "Sample Size",
-            min_value=10,
-            max_value=500,
-            value=100,
-            step=10,
-            help="Number of data points to generate",
-        )
-
-    with control_col2:
-        noise_level = st.slider(
-            "Noise Level",
-            min_value=0.0,
-            max_value=1.0,
-            value=0.2,
-            step=0.05,
-            help="Standard deviation of Gaussian noise",
-        )
-
-    with control_col3:
-        test_size = st.slider(
-            "Test Size",
-            min_value=0.1,
-            max_value=0.5,
-            value=0.2,
-            step=0.05,
-            help="Proportion of data for testing",
-        )
-
-    with control_col4:
-        show_residuals = st.checkbox(
-            "Show Residuals",
-            value=True,
-            help="Display residual plot below regression line",
-        )
-
-    # Run button centered below controls
-    run_col1, run_col2, run_col3 = st.columns([1, 2, 1])
-    with run_col2:
-        if st.button(
-            "🚀 Run Linear Regression", type="primary", use_container_width=True
-        ):
-            with st.spinner("Generating data and training model..."):
-                # Generate data
-                X, y = generate_linear_data(
-                    n_samples=sample_size,
-                    n_features=1,
-                    noise=noise_level,
-                    random_state=42,
-                )
-
-                # Train model
-                results = train_linear_regression(
-                    X, y, test_size=test_size, random_state=42
-                )
-
-                # Display results
-                col1, col2 = st.columns(2)
-
-                with col1:
-                    st.metric("R² Score", f"{results['r2']:.4f}")
-                    st.metric("Mean Squared Error", f"{results['mse']:.4f}")
-
-                with col2:
-                    st.metric("Slope (β₁)", f"{results['coefficients']['slope']:.4f}")
-                    st.metric("Intercept (β₀)", f"{results['intercept']:.4f}")
-
-                # Plot results
-                fig = plot_regression_results(
-                    results["X_test"],
-                    results["y_test"],
-                    results["y_pred"],
-                    show_residuals=show_residuals,
-                )
-                st.plotly_chart(fig, use_container_width=True)
-
-                # Show raw data
-                with st.expander("📊 Generated Data", expanded=False):
-                    import pandas as pd
-
-                    df = pd.DataFrame({"Feature": X.flatten(), "Target": y})
-                    st.dataframe(df.head(10))
-                    st.caption(f"Showing 10 of {len(df)} rows")
+    regression_demo()
 
     # 3. Implementation Examples
     st.header("💻 Implementation Examples")
@@ -355,9 +265,7 @@ print(f"Lasso coefficients (sparse): {lasso.coef_}")
                 st.markdown(f"**Solution:** {pitfall_info['solution']}")
 
     # 6. References & Further Reading (in expander)
-    st.header("📚 References & Further Reading")
-
-    with st.expander("Click to view references", expanded=False):
+    with st.expander("📚 References & Further Reading", expanded=False):
         display_references(get_regression_references())
 
     # Footer

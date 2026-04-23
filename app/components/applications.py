@@ -53,148 +53,15 @@ def display_applications(
                         st.markdown(app["examples"])
 
 
-def get_regression_applications() -> List[Dict[str, str]]:
-    """Get real-world applications for regression analysis."""
-    return [
-        {
-            "title": "Sales Forecasting",
-            "description": "Predict future sales based on historical data, marketing spend, and economic indicators.",
-            "details": "Used by retail companies to optimize inventory, plan promotions, and allocate resources.",
-            "examples": [
-                "Predicting monthly sales for a retail chain",
-                "Forecasting demand for seasonal products",
-                "Estimating revenue growth for startups",
-            ],
-        },
-        {
-            "title": "Risk Assessment",
-            "description": "Quantify risk factors in finance, insurance, and healthcare.",
-            "details": "Helps organizations make data-driven decisions about risk exposure and mitigation strategies.",
-            "examples": [
-                "Credit scoring for loan applications",
-                "Insurance premium calculation",
-                "Medical risk prediction",
-            ],
-        },
-        {
-            "title": "Price Optimization",
-            "description": "Determine optimal pricing based on market conditions, competition, and customer behavior.",
-            "details": "Used by e-commerce platforms, airlines, and hospitality businesses to maximize revenue.",
-            "examples": [
-                "Dynamic pricing for ride-sharing services",
-                "Hotel room pricing based on demand",
-                "E-commerce product pricing algorithms",
-            ],
-        },
-        {
-            "title": "Quality Control",
-            "description": "Monitor and predict product quality in manufacturing processes.",
-            "details": "Helps identify factors affecting quality and optimize production parameters.",
-            "examples": [
-                "Predicting defect rates in manufacturing",
-                "Optimizing chemical process parameters",
-                "Monitoring equipment performance",
-            ],
-        },
-    ]
-
-
-def get_clustering_applications() -> List[Dict[str, str]]:
-    """Get real-world applications for clustering analysis."""
-    return [
-        {
-            "title": "Customer Segmentation",
-            "description": "Group customers based on purchasing behavior, demographics, and preferences.",
-            "details": "Enables targeted marketing, personalized recommendations, and improved customer retention.",
-            "examples": [
-                "E-commerce customer segmentation",
-                "Banking customer profiling",
-                "Subscription service user groups",
-            ],
-        },
-        {
-            "title": "Image Segmentation",
-            "description": "Group pixels in images based on color, texture, or other features.",
-            "details": "Used in computer vision for object detection, medical imaging, and autonomous vehicles.",
-            "examples": [
-                "Medical image analysis (tumor detection)",
-                "Satellite image classification",
-                "Facial recognition systems",
-            ],
-        },
-        {
-            "title": "Anomaly Detection",
-            "description": "Identify unusual patterns or outliers in data.",
-            "details": "Critical for fraud detection, network security, and system monitoring.",
-            "examples": [
-                "Credit card fraud detection",
-                "Network intrusion detection",
-                "Manufacturing defect detection",
-            ],
-        },
-        {
-            "title": "Document Clustering",
-            "description": "Group similar documents for organization and retrieval.",
-            "details": "Used in information retrieval, recommendation systems, and content management.",
-            "examples": [
-                "News article categorization",
-                "Research paper organization",
-                "Customer support ticket grouping",
-            ],
-        },
-    ]
-
-
-def get_time_series_applications() -> List[Dict[str, str]]:
-    """Get real-world applications for time series analysis."""
-    return [
-        {
-            "title": "Stock Market Prediction",
-            "description": "Forecast stock prices and market trends based on historical data.",
-            "details": "Used by traders, investors, and financial institutions for decision making.",
-            "examples": [
-                "Daily stock price forecasting",
-                "Market volatility prediction",
-                "Trading signal generation",
-            ],
-        },
-        {
-            "title": "Energy Demand Forecasting",
-            "description": "Predict electricity consumption patterns for grid management.",
-            "details": "Helps utility companies optimize generation, reduce costs, and prevent blackouts.",
-            "examples": [
-                "Hourly electricity demand prediction",
-                "Renewable energy output forecasting",
-                "Peak load management",
-            ],
-        },
-        {
-            "title": "Weather Forecasting",
-            "description": "Predict meteorological conditions based on historical patterns.",
-            "details": "Critical for agriculture, transportation, disaster management, and daily planning.",
-            "examples": [
-                "Temperature and precipitation forecasts",
-                "Hurricane tracking and intensity prediction",
-                "Seasonal climate patterns",
-            ],
-        },
-        {
-            "title": "Website Traffic Analysis",
-            "description": "Analyze and predict web traffic patterns for capacity planning.",
-            "details": "Helps websites optimize server resources, plan marketing campaigns, and improve user experience.",
-            "examples": [
-                "Daily visitor prediction",
-                "Peak traffic hour analysis",
-                "Seasonal trend identification",
-            ],
-        },
-    ]
-
-
 # Example usage in a Streamlit app:
 if __name__ == "__main__":
     st.title("Applications Component Demo")
-
+    
+    # Import data functions from data modules
+    from app.data.regression import get_regression_applications
+    from app.data.clustering import get_clustering_applications
+    from app.data.general import get_time_series_applications
+    
     st.subheader("Regression Applications")
     display_applications(get_regression_applications())
 
