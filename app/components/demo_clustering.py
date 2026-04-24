@@ -24,8 +24,6 @@ def clustering_demo() -> None:
     """Interactive demo for clustering analysis."""
     with st.expander("🎮 Interactive Demo", expanded=True): 
         # Demo controls at the top (horizontal layout)
-        st.subheader("⚙️ Clustering Parameters")
-        
         # Create horizontal columns for controls
         param_col1, param_col2, param_col3, param_col4 = st.columns(4)
         
@@ -151,70 +149,68 @@ def clustering_demo() -> None:
                 )
         
         # Run button centered below controls
-        run_col1, run_col2, run_col3 = st.columns([1, 2, 1])
-        with run_col2:
-            if st.button("🚀 Run Clustering Analysis", type="primary", use_container_width=True):
-                with st.spinner("Generating data and applying clustering algorithm..."):
-                    # Generate data based on selected parameters
-                    if dataset_type == "blobs":
-                        X, y_true = generate_clustering_data(
-                            n_samples=n_samples,
-                            n_clusters=n_clusters,
-                            cluster_std=cluster_std,
-                            random_state=42,
-                        )
-                    elif dataset_type in ["moons", "circles", "anisotropic"]:
-                        X, y_true = generate_complex_clustering_data(
-                            n_samples=n_samples,
-                            dataset_type=dataset_type,
-                            noise=noise if dataset_type != "anisotropic" else 0.05,
-                            random_state=42,
-                        )
-                    else:  # random
-                        X = np.random.randn(n_samples, 2)
-                        y_true = np.zeros(n_samples)
-                    
-                    # Apply selected algorithm
-                    if algorithm == "K-means":
-                        result = apply_kmeans(
-                            X,
-                            n_clusters=k_value,
-                            random_state=random_state,
-                            scale_data=scale_data,
-                        )
-                        labels = result["labels"]
-                        centers = result["centers"]
-                    
-                    elif algorithm == "DBSCAN":
-                        result = apply_dbscan(
-                            X, eps=eps, min_samples=min_samples, scale_data=scale_data
-                        )
-                        labels = result["labels"]
-                        centers = None
-                    
-                    elif algorithm == "Hierarchical":
-                        result = apply_hierarchical(
-                            X,
-                            n_clusters=n_clusters_h,
-                            linkage=linkage_method,
-                            scale_data=scale_data,
-                        )
-                        labels = result["labels"]
-                        centers = None
-                    
-                    elif algorithm == "GMM":
-                        result = apply_gmm(
-                            X,
-                            n_components=n_components,
-                            covariance_type=covariance_type,
-                            random_state=42,
-                            scale_data=scale_data,
-                        )
-                        labels = result["labels"]
-                        centers = None
-                    
-                    # Display results
-                    _display_clustering_results(X, labels, y_true, algorithm, result, centers)
+        if st.button("🚀 Run Clustering Analysis", type="primary", use_container_width=True):
+            with st.spinner("Generating data and applying clustering algorithm..."):
+                # Generate data based on selected parameters
+                if dataset_type == "blobs":
+                    X, y_true = generate_clustering_data(
+                        n_samples=n_samples,
+                        n_clusters=n_clusters,
+                        cluster_std=cluster_std,
+                        random_state=42,
+                    )
+                elif dataset_type in ["moons", "circles", "anisotropic"]:
+                    X, y_true = generate_complex_clustering_data(
+                        n_samples=n_samples,
+                        dataset_type=dataset_type,
+                        noise=noise if dataset_type != "anisotropic" else 0.05,
+                        random_state=42,
+                    )
+                else:  # random
+                    X = np.random.randn(n_samples, 2)
+                    y_true = np.zeros(n_samples)
+                
+                # Apply selected algorithm
+                if algorithm == "K-means":
+                    result = apply_kmeans(
+                        X,
+                        n_clusters=k_value,
+                        random_state=random_state,
+                        scale_data=scale_data,
+                    )
+                    labels = result["labels"]
+                    centers = result["centers"]
+                
+                elif algorithm == "DBSCAN":
+                    result = apply_dbscan(
+                        X, eps=eps, min_samples=min_samples, scale_data=scale_data
+                    )
+                    labels = result["labels"]
+                    centers = None
+                
+                elif algorithm == "Hierarchical":
+                    result = apply_hierarchical(
+                        X,
+                        n_clusters=n_clusters_h,
+                        linkage=linkage_method,
+                        scale_data=scale_data,
+                    )
+                    labels = result["labels"]
+                    centers = None
+                
+                elif algorithm == "GMM":
+                    result = apply_gmm(
+                        X,
+                        n_components=n_components,
+                        covariance_type=covariance_type,
+                        random_state=42,
+                        scale_data=scale_data,
+                    )
+                    labels = result["labels"]
+                    centers = None
+                
+                # Display results
+                _display_clustering_results(X, labels, y_true, algorithm, result, centers)
 
 
 def _display_clustering_results(X, labels, y_true, algorithm, result, centers):

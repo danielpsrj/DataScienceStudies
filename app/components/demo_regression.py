@@ -57,50 +57,49 @@ def regression_demo() -> None:
             )
         
         # Run button centered below controls
-        run_col1, run_col2, run_col3 = st.columns([1, 2, 1])
-        with run_col2:
-            if st.button("🚀 Run Linear Regression", type="primary", use_container_width=True):
-                with st.spinner("Generating data and training model..."):
-                    # Generate data
-                    X, y = generate_linear_data(
-                        n_samples=sample_size,
-                        n_features=1,
-                        noise=noise_level,
-                        random_state=42,
-                    )
+        #run_col1, run_col2, run_col3 = st.columns([1, 2, 1])
+        if st.button("🚀 Run Linear Regression", type="primary", use_container_width=True):
+            with st.spinner("Generating data and training model..."):
+                # Generate data
+                X, y = generate_linear_data(
+                    n_samples=sample_size,
+                    n_features=1,
+                    noise=noise_level,
+                    random_state=42,
+                )
+                
+                # Train model
+                results = train_linear_regression(
+                    X, y, test_size=test_size, random_state=42
+                )
+                
+                # Display results
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    st.metric("R² Score", f"{results['r2']:.4f}")
+                    st.metric("Mean Squared Error", f"{results['mse']:.4f}")
+                
+                with col2:
+                    st.metric("Slope (β₁)", f"{results['coefficients']['slope']:.4f}")
+                    st.metric("Intercept (β₀)", f"{results['intercept']:.4f}")
+                
+                # Plot results
+                fig = plot_regression_results(
+                    results["X_test"],
+                    results["y_test"],
+                    results["y_pred"],
+                    show_residuals=show_residuals,
+                )
+                st.plotly_chart(fig, use_container_width=True)
+                
+                # Show raw data
+                with st.expander("📊 Generated Data", expanded=False):
+                    import pandas as pd
                     
-                    # Train model
-                    results = train_linear_regression(
-                        X, y, test_size=test_size, random_state=42
-                    )
-                    
-                    # Display results
-                    col1, col2 = st.columns(2)
-                    
-                    with col1:
-                        st.metric("R² Score", f"{results['r2']:.4f}")
-                        st.metric("Mean Squared Error", f"{results['mse']:.4f}")
-                    
-                    with col2:
-                        st.metric("Slope (β₁)", f"{results['coefficients']['slope']:.4f}")
-                        st.metric("Intercept (β₀)", f"{results['intercept']:.4f}")
-                    
-                    # Plot results
-                    fig = plot_regression_results(
-                        results["X_test"],
-                        results["y_test"],
-                        results["y_pred"],
-                        show_residuals=show_residuals,
-                    )
-                    st.plotly_chart(fig, use_container_width=True)
-                    
-                    # Show raw data
-                    with st.expander("📊 Generated Data", expanded=False):
-                        import pandas as pd
-                        
-                        df = pd.DataFrame({"Feature": X.flatten(), "Target": y})
-                        st.dataframe(df.head(10))
-                        st.caption(f"Showing 10 of {len(df)} rows")
+                    df = pd.DataFrame({"Feature": X.flatten(), "Target": y})
+                    st.dataframe(df.head(10))
+                    st.caption(f"Showing 10 of {len(df)} rows")
 
 
 def get_regression_demo_code() -> str:
